@@ -1,9 +1,0 @@
-{
-    "name": "academyproject",
-    "type": "python",
-    "build": {
-        "command": "pip install -r requirements.txt",
-        "output_dir": "staticfiles"
-    },
-    "start": "python manage.py runserver 0.0.0.0:8000"
-}
