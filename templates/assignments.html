@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة التعيينات - Assignments Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .back-btn {
+            padding: 12px 28px;
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dashboard-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .dashboard-card:hover::before {
+            opacity: 1;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .form-icon {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            color: #a5b4fc;
+        }
+
+        .list-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2));
+            color: #34d399;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: #94a3b8;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.25rem;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.08),
+                    rgba(255, 255, 255, 0.03));
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            font-weight: 600;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        [dir="rtl"] select {
+            padding: 1rem 1.25rem 1rem 3rem;
+        }
+
+        select:hover {
+            border-color: var(--primary-light);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        select option {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding: 12px;
+            font-weight: 500;
+        }
+
+        .select-wrapper::after {
+            content: '⌄';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.4rem;
+            color: #a5b4fc;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+        }
+
+        [dir="rtl"] .select-wrapper::after {
+            left: 1rem;
+        }
+
+        [dir="ltr"] .select-wrapper::after {
+            right: 1rem;
+        }
+
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .assignments-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .assignments-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .assignments-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .assignments-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .assignment-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+
+        .assignment-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(-8px);
+        }
+
+        [dir="rtl"] .assignment-item:hover {
+            transform: translateX(8px);
+        }
+
+        .assignment-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .trainer-avatar {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .cadet-avatar {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .assignment-arrow {
+            margin: 0 1rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .delete-form {
+            margin: 0;
+        }
+
+        .delete-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+            color: #94a3b8;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #e2e8f0;
+        }
+
+        .empty-description {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .trainer-icon {
+            color: #34d399;
+        }
+
+        .cadet-icon {
+            color: #fbbf24;
+        }
+
+        .link-icon {
+            color: #a5b4fc;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .dashboard-card {
+                padding: 1.5rem;
+            }
+
+            .assignment-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .assignment-info {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .assignment-arrow {
+                transform: rotate(90deg);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="particles" id="particles-js"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div>
+                    <h1 class="title">إدارة التعيينات</h1>
+                    <p class="subtitle">ربط المدربين بالمتدربين - Assign Trainers to Cadets</p>
+                </div>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                العودة للوحة التحكم
+            </a>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon form-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div>
+                        <h2 class="card-title">تعيين جديد</h2>
+                        <p class="card-description">اختر مدرب ومتدرب لإنشاء تعيين جديد</p>
+                    </div>
+                </div>
+
+                <form method="POST" id="assignmentForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="assign">
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            المدرب - Trainer
+                        </label>
+                        <div class="select-wrapper">
+                            <select name="trainer_id" required>
+                                <option value="">-- اختر المدرب --</option>
+                                {% for trainer in trainers %}
+                                <option value="{{ trainer.id }}">{{ trainer.name }} (@{{ trainer.username }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user-graduate"></i>
+                            المتدرب - Cadet
+                        </label>
+                        <div class="select-wrapper">
+                            <select name="cadet_id" required>
+                                <option value="">-- اختر المتدرب --</option>
+                                {% for cadet in cadets %}
+                                <option value="{{ cadet.id }}">{{ cadet.name }} (@{{ cadet.username }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-link"></i>
+                        إنشاء التعيين
+                    </button>
+                </form>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon list-icon">
+                        <i class="fas fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h2 class="card-title">التعيينات الحالية</h2>
+                        <p class="card-description">
+                            عدد التعيينات: <strong>{{ assignments|length }}</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="assignments-container">
+                    {% for assignment in assignments %}
+                    <div class="assignment-item" style="animation: fadeIn 0.5s ease forwards;">
+                        <div class="assignment-info">
+                            <div class="user-avatar trainer-avatar">
+                                {{ assignment.trainer.full_name|slice:":1" }}
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name">{{ assignment.trainer.full_name }}</div>
+                                <div class="user-role">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    مدرب
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="assignment-arrow">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+
+                        <div class="assignment-info">
+                            <div class="user-avatar cadet-avatar">
+                                {{ assignment.cadet.full_name|slice:":1" }}
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name">{{ assignment.cadet.full_name }}</div>
+                                <div class="user-role">
+                                    <i class="fas fa-user-graduate"></i>
+                                    متدرب
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="POST" class="delete-form" onsubmit="return confirmDelete()">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="assignment_id" value="{{ assignment.id }}">
+                            <button type="submit" class="delete-btn" title="حذف التعيين">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-link-slash"></i>
+                        </div>
+                        <h3 class="empty-title">لا توجد تعيينات حالياً</h3>
+                        <p class="empty-description">ابدأ بإنشاء تعيين جديد من النموذج</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon trainer-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-value">{{ trainers|length }}</div>
+                <div class="stat-label">مدرب متاح</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon cadet-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-value">{{ cadets|length }}</div>
+                <div class="stat-label">متدرب متاح</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon link-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="stat-value">{{ assignments|length }}</div>
+                <div class="stat-label">تعيين نشط</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: "#10b981" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#10b981",
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: { enable: true, speed: 1.5, direction: "none", random: true }
+                }
+            });
+
+            const form = document.getElementById('assignmentForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', function (e) {
+                if (form.checkValidity()) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<span class="loading"></span> جاري إنشاء التعيين...';
+                    submitBtn.disabled = true;
+
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 2000);
+                }
+            });
+
+            document.querySelectorAll('select').forEach(select => {
+                select.addEventListener('focus', function () {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+
+                select.addEventListener('blur', function () {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        function confirmDelete() {
+            return confirm('هل أنت متأكد من حذف هذا التعيين؟ لا يمكن التراجع عن هذا الإجراء.');
+        }
+
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        if (document.querySelectorAll('.assignment-item').length > 0) {
+            document.querySelectorAll('.assignment-item').forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+            });
+        }
+    </script>
+</body>
+
+</html>

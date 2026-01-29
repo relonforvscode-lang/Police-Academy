@@ -1,0 +1,21 @@
+[package]
+name = "newww-app"
+version = "0.1.0"
+description = "Django App Deployment"
+license = "MIT"
+
+[dependencies]
+"python" = "3.11"
+
+[fs]
+"/app" = "."
+
+[env]
+WASMER_ENV = "true"
+DJANGO_SETTINGS_MODULE = "myproject.settings"
+
+[[command]]
+name = "start"
+module = "python"
+runner = "python"
+args = ["-c", "import os; os.system('python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:80')"]

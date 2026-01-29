@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | النظام الاحترافي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            z-index: 10;
+            position: relative;
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary), var(--secondary), transparent);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo-circle {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            box-shadow: 
+                0 15px 30px rgba(99, 102, 241, 0.3),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .system-name {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .system-description {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .error-alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: shake 0.5s;
+        }
+
+        .error-alert i {
+            color: #fca5a5;
+            font-size: 18px;
+        }
+
+        .error-alert span {
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            padding-right: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 16px;
+            transition: all 0.3s;
+            outline: none;
+            text-align: right;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-emoji {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 18px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .demo-section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-title {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .demo-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .demo-card:hover::before {
+            opacity: 1;
+        }
+
+        .demo-role {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .demo-username {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .demo-password {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .security-note {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .login-card {
+                padding: 30px 25px;
+            }
+            
+            .logo-circle {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            
+            .system-name {
+                font-size: 24px;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-input {
+                padding: 14px 18px;
+                padding-right: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 25px 20px;
+            }
+            
+            .logo-circle {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            
+            .system-name {
+                font-size: 22px;
+            }
+            
+            .form-input {
+                padding: 13px 16px;
+                padding-right: 40px;
+                font-size: 15px;
+            }
+            
+            .login-btn {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            .input-emoji {
+                right: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div class="particles" id="particles-js"></div>
+
+    <!-- Login Form -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo-circle">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1 class="system-name">النظام الاحترافي</h1>
+                <p class="system-description">إدارة التدريب المتقدم</p>
+            </div>
+
+            {% if error %}
+            <div class="error-alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <form method="POST" id="loginForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        اسم المستخدم
+                    </label>
+                    <div class="input-container">
+                        <span class="input-emoji">👤</span>
+                        <input type="text" name="username" id="usernameInput" class="form-input" 
+                               placeholder="أدخل اسم المستخدم" required autofocus>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i>
+                        كلمة المرور
+                    </label>
+                    <div class="input-container">
+                        <span class="input-emoji">🔒</span>
+                        <input type="password" name="password" id="passwordInput" class="form-input" 
+                               placeholder="أدخل كلمة المرور" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-btn" id="submitBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    دخول للنظام
+                </button>
+            </form>
+
+            <div class="demo-section">
+                <div class="demo-title">
+                    <i class="fas fa-vial"></i>
+                    بيانات الدخول التجريبية
+                </div>
+                
+                <div class="demo-grid">
+                    <div class="demo-card" onclick="fillCredentials(this, '1213', '1213')">
+                        <div class="demo-role">
+                            <i class="fas fa-user-shield"></i>
+                            مسؤول النظام
+                        </div>
+                        <div class="demo-username">1213</div>
+                        <div class="demo-password">كلمة المرور: 1213</div>
+                    </div>
+
+                    <div class="demo-card" onclick="fillCredentials(this, 'trainer', '12131213')">
+                        <div class="demo-role">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            مدرب 
+                        </div>
+                        <div class="demo-username">trainer</div>
+                        <div class="demo-password">كلمة المرور: 12131213</div>
+                    </div>
+                    
+                    <div class="demo-card" onclick="fillCredentials(this, 'cadet', '12131213')">
+                        <div class="demo-role">
+                            <i class="fas fa-user-graduate"></i>
+                            متدرب
+                        </div>
+                        <div class="demo-username">cadet</div>
+                        <div class="demo-password">كلمة المرور: 12131213</div>
+                    </div>
+                </div>
+                
+                <div class="security-note">
+                    <i class="fas fa-info-circle"></i>
+                    هذه بيانات تجريبية - يُرجى استخدامها لأغراض الاختبار فقط
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup particles like in other pages
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#6366f1" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { 
+                        enable: true, 
+                        distance: 150, 
+                        color: "#6366f1", 
+                        opacity: 0.2, 
+                        width: 1 
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 2, 
+                        direction: "none", 
+                        random: true,
+                        out_mode: "out"
+                    }
+                }
+            });
+            
+            const loginForm = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            
+            // Form submission handler
+            loginForm.addEventListener('submit', function(e) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="loading-spinner"></span> جاري التحقق...';
+                submitBtn.disabled = true;
+                
+                // Re-enable button after 3 seconds in case of error
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 3000);
+            });
+            
+            // Add focus effects to inputs
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                    this.parentElement.querySelector('.input-emoji').style.color = '#6366f1';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                    this.parentElement.querySelector('.input-emoji').style.color = '#94a3b8';
+                });
+            });
+            
+            // Debug: تسجيل بيانات الحقول الحالية
+            console.log('الحقول الحالية:');
+            console.log('- usernameInput:', usernameInput);
+            console.log('- passwordInput:', passwordInput);
+        });
+        
+        // Function to fill credentials when demo card is clicked
+        function fillCredentials(card, username, password) {
+            console.log('تم استدعاء fillCredentials مع:');
+            console.log('- username:', username);
+            console.log('- password:', password);
+            
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            
+            console.log('- وجد usernameInput:', !!usernameInput);
+            console.log('- وجد passwordInput:', !!passwordInput);
+            
+            if (usernameInput && passwordInput) {
+                // تعبئة الحقول
+                usernameInput.value = username;
+                passwordInput.value = password;
+                
+                // إضافة تأثير للبطاقة التي تم النقر عليها
+                card.style.background = 'rgba(99, 102, 241, 0.1)';
+                
+                // إضافة تأثير لحقول الإدخال
+                usernameInput.style.borderColor = '#6366f1';
+                passwordInput.style.borderColor = '#6366f1';
+                
+                // إضافة تأثير للايموجي
+                const usernameEmoji = usernameInput.parentElement.querySelector('.input-emoji');
+                const passwordEmoji = passwordInput.parentElement.querySelector('.input-emoji');
+                
+                if (usernameEmoji) usernameEmoji.style.color = '#6366f1';
+                if (passwordEmoji) passwordEmoji.style.color = '#6366f1';
+                
+                setTimeout(() => {
+                    card.style.background = '';
+                    
+                    // إعادة لون الحقول بعد 2 ثانية
+                    usernameInput.style.borderColor = '';
+                    passwordInput.style.borderColor = '';
+                    
+                    if (usernameEmoji) usernameEmoji.style.color = '';
+                    if (passwordEmoji) passwordEmoji.style.color = '';
+                }, 2000);
+                
+                // عرض رسالة نجاح
+                showSuccessMessage(`تم تعبئة بيانات ${username}`);
+                
+                // التركيز على حقل كلمة المرور
+                setTimeout(() => {
+                    passwordInput.focus();
+                }, 300);
+            } else {
+                console.error('❌ لم يتم العثور على حقول الإدخال!');
+                // محاولة بديلة
+                const usernameInputAlt = document.querySelector('input[name="username"]');
+                const passwordInputAlt = document.querySelector('input[name="password"]');
+                
+                if (usernameInputAlt && passwordInputAlt) {
+                    usernameInputAlt.value = username;
+                    passwordInputAlt.value = password;
+                    console.log('✅ تم تعبئة البيانات بالطريقة البديلة');
+                }
+            }
+        }
+        
+        // دالة لعرض رسالة نجاح
+        function showSuccessMessage(message) {
+            // إنشاء عنصر الرسالة
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'error-alert';
+            messageDiv.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05))';
+            messageDiv.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            messageDiv.style.color = '#10b981';
+            messageDiv.innerHTML = `
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                <span style="color: #10b981;">${message}</span>
+            `;
+            
+            // إضافة الرسالة قبل النموذج
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm && loginForm.parentNode) {
+                loginForm.parentNode.insertBefore(messageDiv, loginForm);
+                
+                // إزالة الرسالة بعد 3 ثواني
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.style.opacity = '0';
+                        messageDiv.style.transform = 'translateY(-10px)';
+                        messageDiv.style.transition = 'all 0.3s';
+                        
+                        setTimeout(() => {
+                            if (messageDiv.parentNode) {
+                                messageDiv.remove();
+                            }
+                        }, 300);
+                    }
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

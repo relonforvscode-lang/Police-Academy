@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة المتدرب - Cadet Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Header Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow:
+                0 20px 40px rgba(245, 158, 11, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        .banner-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-text h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .welcome-text p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            color: white;
+        }
+
+        .logout-btn {
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content Card */
+        .dashboard-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .trainer-count {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .card-description {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Trainers Grid */
+        .trainers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .trainer-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .trainer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--success), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .trainer-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+
+        .trainer-card:hover::before {
+            opacity: 1;
+        }
+
+        .trainer-avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .trainer-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .trainer-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .trainer-username {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .trainer-badge {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .chat-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            text-decoration: none;
+        }
+
+        .chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-description {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            padding: 1rem 0;
+            padding-right: 2.5rem;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list li::before {
+            content: '✓';
+            position: absolute;
+            right: 0;
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .welcome-banner {
+                padding: 2rem 1.5rem;
+            }
+
+            .banner-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .welcome-text h1 {
+                font-size: 2rem;
+            }
+
+            .dashboard-card {
+                padding: 1.5rem;
+            }
+
+            .trainers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trainer-card {
+                padding: 1.5rem;
+            }
+
+            .trainer-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-text h1 {
+                font-size: 1.6rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .trainer-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Particles Background -->
+    <div class="particles" id="particles-js"></div>
+
+    <div class="container">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="banner-content">
+                <div class="welcome-text">
+                    <h1>مرحباً، {{ user.name }} 👋</h1>
+                    <p>لوحة تحكم المتدرب - Cadet Dashboard</p>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    تسجيل الخروج
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2>
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    المدربين المعينين لك
+                </h2>
+                <div class="trainer-count">
+                    {{ trainers_data|length }} مدرب
+                </div>
+            </div>
+
+            <p class="card-description">
+                يمكنك التواصل مع مدربيك والاستفسار عن تقييماتك
+            </p>
+
+            {% if trainers_data %}
+            <div class="trainers-grid">
+                {% for data in trainers_data %}
+                <div class="trainer-card" style="animation-delay: {{ forloop.counter0|add:'0.1' }}s">
+                    <div class="trainer-avatar">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="trainer-info">
+                        <h3 class="trainer-name">{{ data.trainer.full_name }}</h3>
+                        <div class="trainer-username">@{{ data.trainer.username }}</div>
+                        <span class="trainer-badge">مدرب</span>
+                    </div>
+                    <a href="{% url 'chat' data.trainer.id %}" class="chat-btn" style="position: relative;">
+                        <i class="fas fa-comment-dots"></i>
+                        بدء محادثة
+                        {% if data.unread_count > 0 %}
+                        <span style="
+                            position: absolute;
+                            top: -8px;
+                            right: -8px;
+                            background: #ef4444;
+                            color: white;
+                            font-size: 0.8rem;
+                            font-weight: bold;
+                            padding: 2px 8px;
+                            border-radius: 50%;
+                            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+                            animation: pulse 2s infinite;
+                        ">{{ data.unread_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3 class="empty-title">لا يوجد مدربين معينين حالياً</h3>
+                <p class="empty-description">
+                    سيتم عرض المدربين المعينين لك من قبل المسؤول هنا
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Info Card -->
+        <div class="info-card">
+            <h3>
+                <i class="fas fa-info-circle"></i>
+                معلومات مهمة
+            </h3>
+            <ul class="info-list">
+                <li>تواصل مع مدربيك بانتظام لمتابعة تقدمك</li>
+                <li>اطلب التوجيه والمساعدة عند الحاجة</li>
+                <li>ستتلقى إشعارات عند حصولك على تقييمات جديدة</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Show notifications if any
+            {% if notifications %}
+            const notifications = [
+                {% for notif in notifications %}
+                {
+                id: {{ notif.id }},
+            message: "{{ notif.message|escapejs }}"
+                }{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ];
+
+        // Show first notification
+        if (notifications.length > 0) {
+            const notif = notifications[0];
+            Swal.fire({
+                title: '⚠️ تنبيه مهم',
+                html: `<div style="font-size: 1.2rem; line-height: 1.8; color: #334155; text-align: center; padding: 1rem;">${notif.message}</div>`,
+                icon: 'warning',
+                confirmButtonText: 'حسناً، فهمت',
+                confirmButtonColor: '#f59e0b',
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'swal-rtl',
+                    title: 'swal-title-rtl',
+                    htmlContainer: 'swal-html-rtl'
+                },
+                didOpen: () => {
+                    // Add RTL styling
+                    const popup = Swal.getPopup();
+                    popup.style.direction = 'rtl';
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mark notification as read
+                    // FIX: Updated URL to match urls.py definition
+                    fetch(`/api/read/${notif.id}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    });
+                }
+            });
+        }
+        {% endif %}
+
+        // Real-time chat badge update
+        function updateChatBadges() {
+            fetch('/api/unread-messages/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.counts) {
+                        // Iterate through all chat buttons
+                        document.querySelectorAll('a[href*="/chat/"]').forEach(btn => {
+                            // Extract user ID from href
+                            const href = btn.getAttribute('href');
+                            // Match /chat/123/
+                            const match = href.match(/\/chat\/(\d+)\/?/);
+                            if (match) {
+                                const userId = match[1];
+                                const count = data.counts[userId] || 0;
+
+                                let badge = btn.querySelector('.unread-badge');
+
+                                if (count > 0) {
+                                    if (!badge) {
+                                        badge = document.createElement('span');
+                                        badge.className = 'unread-badge';
+                                        badge.style.cssText = `
+                                            position: absolute;
+                                            top: -8px;
+                                            right: -8px;
+                                            background: #ef4444;
+                                            color: white;
+                                            font-size: 0.8rem;
+                                            font-weight: bold;
+                                            padding: 2px 8px;
+                                            border-radius: 50%;
+                                            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+                                            animation: pulse 2s infinite;
+                                        `;
+                                        btn.appendChild(badge);
+                                    }
+                                    badge.textContent = count;
+                                    badge.style.display = 'block';
+                                } else if (badge) {
+                                    badge.style.display = 'none';
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(console.error);
+        }
+
+        // Poll every 3 seconds
+        setInterval(updateChatBadges, 3000);
+
+        // Setup particles like other pages
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 60, density: { enable: true, value_area: 800 } },
+                color: { value: "#f59e0b" },
+                shape: { type: "circle" },
+                opacity: { value: 0.3, random: true },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#f59e0b",
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: { enable: true, speed: 1.5, direction: "none", random: true }
+            }
+        });
+
+        // Add staggering animation to trainer cards
+        const trainerCards = document.querySelectorAll('.trainer-card');
+        trainerCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease-out';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Add hover effects
+        document.querySelectorAll('.trainer-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        });
+    </script>
+</body>
+
+</html>

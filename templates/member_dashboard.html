@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم العضو</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Notifications -->
+    <!-- Notifications Container -->
+    <div class="notifications-container">
+        {% for notif in notifications %}
+        <div class="status-badge" id="notif-{{ notif.id }}">
+            <button onclick="dismissNotification({{ notif.id }})"
+                style="float:left; background:none; border:none; cursor:pointer; font-weight:bold;">&times;</button>
+            <strong>تنبيه:</strong><br>
+            {{ notif.message }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function dismissNotification(id) {
+            fetch(`/api/notification/${id}/read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById(`notif-${id}`).remove();
+                }
+            });
+        }
+    </script>
+
+
+    <div class="container">
+        <header class="dashboard-header">
+            <div>
+                <h1>مرحباً، {{ user.full_name }}</h1>
+                <p style="color: var(--text-muted)">لوحة تحكم العضو</p>
+            </div>
+            <a href="{% url 'logout' %}" class="btn btn-danger">تسجيل الخروج</a>
+        </header>
+
+        <section>
+            <h2 class="card-title">المتدربون المخصصون</h2>
+            <div class="card-grid">
+                {% for cadet in cadets %}
+                <div class="card">
+                    <h3>{{ cadet.full_name }}</h3>
+                    <p style="color: var(--text-muted)">@{{ cadet.username }}</p>
+                    <div class="card-actions">
+                        <a href="{% url 'evaluate' cadet.id %}" class="btn btn-primary">تقييم</a>
+                        <a href="{% url 'chat' cadet.id %}" class="btn btn-primary"
+                            style="background-color: var(--secondary)">المحادثة</a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="card">
+                    <p>لا يوجد متدربون مخصصون.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

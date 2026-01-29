@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقييم المتدرب - Evaluate Cadet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Banner */
+        .header-banner {
+            background: linear-gradient(135deg, var(--accent-yellow), #d97706);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 
+                0 15px 30px rgba(245, 158, 11, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.5s ease;
+        }
+
+        .header-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, white, transparent);
+            opacity: 0.3;
+        }
+
+        .header-banner h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-banner p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Cadet Info Card */
+        .cadet-info-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .cadet-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent-yellow), #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+            color: white;
+        }
+
+        .cadet-info-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .cadet-info-card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge-cadet {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+            color: var(--accent-yellow);
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Main Content Card */
+        .main-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .main-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .main-card > p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Score Slider */
+        .score-slider-container {
+            margin: 2.5rem 0;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .score-value {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .score-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            color: var(--primary);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 14px;
+            border-radius: 10px;
+            background: linear-gradient(to right,
+                    #ef4444 0%,
+                    #f59e0b 30%,
+                    #3b82f6 60%,
+                    #10b981 100%);
+            outline: none;
+            -webkit-appearance: none;
+            overflow: hidden;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 
+                0 0 0 3px rgba(99, 102, 241, 0.3),
+                0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.4),
+                0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 
+                0 0 0 3px rgba(99, 102, 241, 0.3),
+                0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        .score-indicators {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .warning-box.active {
+            display: flex;
+            animation: shake 0.5s;
+        }
+
+        .warning-box i {
+            font-size: 1.8rem;
+            color: var(--danger);
+        }
+
+        .warning-box strong {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .warning-box span {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Buttons */
+        .buttons-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Tips Card */
+        .tips-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        .tips-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-list li {
+            padding: 0.75rem 0;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tips-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tips-list li::before {
+            content: '✓';
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-banner {
+                padding: 1.5rem;
+            }
+            
+            .header-banner h1 {
+                font-size: 1.8rem;
+            }
+            
+            .cadet-info-card,
+            .main-card,
+            .tips-card {
+                padding: 1.5rem;
+            }
+            
+            .cadet-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+            
+            .score-value {
+                font-size: 3.5rem;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-banner h1 {
+                font-size: 1.5rem;
+            }
+            
+            .cadet-info-card h2 {
+                font-size: 1.4rem;
+            }
+            
+            .main-card h2 {
+                font-size: 1.5rem;
+            }
+            
+            .cadet-info-card,
+            .main-card,
+            .tips-card {
+                padding: 1.25rem;
+            }
+            
+            .cadet-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            
+            input[type="range"]::-webkit-slider-thumb {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .score-indicators {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="particles" id="particles-js"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header-banner">
+            <h1><i class="fas fa-star"></i> تقييم المتدرب</h1>
+            <p>قيّم أداء المتدرب وقدم ملاحظاتك</p>
+        </div>
+
+        <!-- Cadet Info -->
+        <div class="cadet-info-card">
+            <div class="cadet-avatar">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <h2>{{ cadet.full_name }}</h2>
+            <p>@{{ cadet.username }}</p>
+            <span class="badge-cadet">متدرب</span>
+        </div>
+
+        <!-- Evaluation Form -->
+        <div class="main-card">
+            <h2><i class="fas fa-clipboard-list"></i> نموذج التقييم</h2>
+            <p>املأ النموذج أدناه لتقييم أداء المتدرب</p>
+
+            <form method="POST" id="evalForm">
+                {% csrf_token %}
+
+                <!-- Score Slider -->
+                <div class="score-slider-container">
+                    <div class="score-display">
+                        <div class="score-value" id="scoreDisplay">50</div>
+                        <div class="score-label" id="scoreLabel">متوسط</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-bullseye"></i> الدرجة - Score (0-100)</label>
+                        <input type="range" name="score" id="scoreSlider" min="0" max="100" value="50" required>
+                        <div class="score-indicators">
+                            <span>0 - ضعيف</span>
+                            <span>50 - متوسط</span>
+                            <span>100 - ممتاز</span>
+                        </div>
+                    </div>
+
+                    <!-- Warning for low scores -->
+                    <div class="warning-box" id="warningBox">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>تنبيه مهم!</strong>
+                            <span>الدرجة أقل من 50 - سيتم إرسال إشعار تحذيري للمتدرب</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments -->
+                <div class="form-group">
+                    <label><i class="fas fa-comment-dots"></i> التعليقات والملاحظات - Comments</label>
+                    <textarea name="comment" rows="6" placeholder="اكتب ملاحظاتك وتوجيهاتك للمتدرب..."
+                        required></textarea>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="buttons-container">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-save"></i>
+                        حفظ التقييم
+                    </button>
+                    <a href="{% url 'trainer_dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        إلغاء
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="tips-card">
+            <h3><i class="fas fa-lightbulb"></i> نصائح للتقييم الفعال</h3>
+            <ul class="tips-list">
+                <li>كن موضوعياً وعادلاً في تقييمك</li>
+                <li>قدم ملاحظات بناءة ومحددة</li>
+                <li>اذكر نقاط القوة والضعف</li>
+                <li>اقترح خطوات للتحسين</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 30, density: { enable: true, value_area: 800 } },
+                    color: { value: "#f59e0b" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.2, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { 
+                        enable: true, 
+                        distance: 150, 
+                        color: "#f59e0b", 
+                        opacity: 0.1, 
+                        width: 1 
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 1, 
+                        direction: "none", 
+                        random: true,
+                        out_mode: "out"
+                    }
+                }
+            });
+
+            const scoreSlider = document.getElementById('scoreSlider');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreLabel = document.getElementById('scoreLabel');
+            const warningBox = document.getElementById('warningBox');
+            const submitBtn = document.getElementById('submitBtn');
+            const evalForm = document.getElementById('evalForm');
+
+            // Update score display
+            function updateScoreDisplay() {
+                const score = parseInt(scoreSlider.value);
+                scoreDisplay.textContent = score;
+
+                // Update label based on score
+                if (score < 30) {
+                    scoreLabel.textContent = 'ضعيف جداً';
+                    scoreLabel.style.color = '#ef4444';
+                } else if (score < 50) {
+                    scoreLabel.textContent = 'ضعيف';
+                    scoreLabel.style.color = '#f59e0b';
+                } else if (score < 70) {
+                    scoreLabel.textContent = 'متوسط';
+                    scoreLabel.style.color = '#3b82f6';
+                } else if (score < 85) {
+                    scoreLabel.textContent = 'جيد';
+                    scoreLabel.style.color = '#10b981';
+                } else {
+                    scoreLabel.textContent = 'ممتاز';
+                    scoreLabel.style.color = '#059669';
+                }
+
+                // Show warning for low scores
+                if (score < 50) {
+                    warningBox.classList.add('active');
+                } else {
+                    warningBox.classList.remove('active');
+                }
+            }
+
+            // Initial update
+            updateScoreDisplay();
+
+            // Event listener for slider
+            scoreSlider.addEventListener('input', updateScoreDisplay);
+
+            // Form submission
+            evalForm.addEventListener('submit', function(e) {
+                const score = parseInt(scoreSlider.value);
+                const originalBtnHTML = submitBtn.innerHTML;
+                
+                // Show loading state
+                submitBtn.innerHTML = '<span class="loading-spinner"></span> جاري الحفظ...';
+                submitBtn.disabled = true;
+
+                // Confirm before submitting low score
+                if (score < 50) {
+                    e.preventDefault();
+                    
+                    if (confirm(`الدرجة ${score} أقل من 50. هل أنت متأكد من المتابعة؟ سيتم إرسال تنبيه للمتدرب.`)) {
+                        // Restore button and submit
+                        submitBtn.innerHTML = originalBtnHTML;
+                        submitBtn.disabled = false;
+                        this.submit();
+                    } else {
+                        // Restore button
+                        submitBtn.innerHTML = originalBtnHTML;
+                        submitBtn.disabled = false;
+                    }
+                }
+            });
+
+            // Ensure particles canvas is properly sized
+            window.addEventListener('resize', function() {
+                const particlesContainer = document.getElementById('particles-js');
+                if (particlesContainer) {
+                    particlesContainer.style.width = '100%';
+                    particlesContainer.style.height = '100%';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
