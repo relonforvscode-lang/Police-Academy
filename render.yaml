@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: academyproject-web
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn myproject.wsgi --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        value: "REPLACE_WITH_SECRET"
+      - key: DEBUG
+        value: "False"
+
+databases:
+  - name: academyproject-db
+    plan: starter
+    region: oregon
+
+# Notes:
+# - Replace the DJANGO_SECRET_KEY value in Render's dashboard or set it via Secrets.
+# - After connecting this repo in Render, Render will create the Web Service and Postgres
+#   using this manifest (you can adjust names/plan/region as needed in the Render UI).
