@@ -1354,7 +1354,7 @@
                         <form method="POST" action="{% url 'admin_application_action' app.id %}" 
                               class="action-form" data-confirm="هل أنت متأكد من رفض هذا المتقدم؟" data-action="reject">
                             {% csrf_token %}
-                            <input type="hidden" name="action" value="reject">0
+                            <input type="hidden" name="action" value="reject">
                             <button type="submit" class="action-btn action-btn-danger">
                                 <i class="fas fa-times"></i>
                                 رفض
