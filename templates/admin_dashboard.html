@@ -943,8 +943,10 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // عند تأكيد الحذف، نقوم بتوجيه المستخدم إلى رابط الحذف
-                    window.location.href = `/admin/delete-user/${userId}/`;
+                    // عند تأكيد الحذف، نستخدم اسم URL من Django بدلاً من مسار ثابت
+                    const deleteUrlTemplate = "{% url 'delete_user' 0 %}"; // يترجم إلى /user/delete/0/
+                    // استبدال الجزء 0 بالمعرف الفعلي
+                    window.location.href = deleteUrlTemplate.replace('/0/', '/' + userId + '/');
                 }
             });
         }
