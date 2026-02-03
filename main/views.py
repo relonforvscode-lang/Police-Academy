@@ -181,9 +181,10 @@ def admin_member_detail(request, uid):
         return redirect('admin_member_detail', uid=uid)
 
     return render(request, 'admin_member_detail.html', {
-        'target': target_user, 
+        'target': target_user,
         'evaluations': evals,
-        'chats': chats
+        'chats': chats,
+        'actor': actor,
     })
 
 @role_required(['trainer'])
@@ -1150,7 +1151,7 @@ def admin_applications_view(request):
     return render(request, 'admin_applications.html', {'applications': apps, 'setting': setting, 'q': q, 'user': user})
 
 
-@role_required(['admin','trainer'])
+@rank_required(applications_only=True)
 def admin_application_action(request, app_id):
     app = get_object_or_404(Application, id=app_id)
     action = request.POST.get('action')
@@ -1206,28 +1207,30 @@ def admin_application_action(request, app_id):
             pass
 
     elif action == 'final_accept':
-        app.status = 'completed'
-        app.save()
-        discord_name = discord_utils.get_guild_member_username(discord_user) or f'cadet{discord_user}'
-        base_username = discord_name.split('#')[0]
-        # sanitize base username: allow letters, digits, dot, underscore, dash
-        base_clean = re.sub(r'[^A-Za-z0-9_.-]', '', base_username)
-        if not base_clean:
-            base_clean = f'cadet{discord_user}'
-        # limit length to 30 chars to fit username field
-        base_clean = base_clean[:30]
-        username = base_clean
-        suffix = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_clean}{suffix}"
-            suffix += 1
+        # Wrap final acceptance in try/except to avoid uncaught 500s
+        try:
+            app.status = 'completed'
+            app.save()
+            discord_name = discord_utils.get_guild_member_username(discord_user) or f'cadet{discord_user}'
+            base_username = discord_name.split('#')[0]
+            # sanitize base username: allow letters, digits, dot, underscore, dash
+            base_clean = re.sub(r'[^A-Za-z0-9_.-]', '', base_username)
+            if not base_clean:
+                base_clean = f'cadet{discord_user}'
+            # limit length to 30 chars to fit username field
+            base_clean = base_clean[:30]
+            username = base_clean
+            suffix = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_clean}{suffix}"
+                suffix += 1
 
-        password = secrets.token_urlsafe(8)
-        cadet = User(username=username, full_name=app.character_name, role='cadet')
-        cadet.set_password(password)
-        cadet.save()
+            password = secrets.token_urlsafe(8)
+            cadet = User(username=username, full_name=app.character_name, rank='cadet')
+            cadet.set_password(password)
+            cadet.save()
 
-        msg = f"""**
+            msg = f"""**
 السلام عليكم ورحمة الله وبركاته
 
 تم قبولك قبول نهائي في شرطة هيل ستيت. نرجو منك مراجعة جميع التعاميم المنشورة.
@@ -1240,30 +1243,36 @@ def admin_application_action(request, app_id):
 
 (<@{discord_user}>)
 **"""
-        if discord_user:
-            try:
-                sent = discord_utils.send_dm(discord_user, msg)
-                if not sent:
-                    Notification.objects.create(user=cadet, message=f"تم إنشاء حسابك لكن فشل إرسال رسالة الديسكورد. بيانات الدخول:\n{msg}")
-            except Exception:
-                Notification.objects.create(user=cadet, message=f"تم إنشاء حسابك لكن حدث خطأ أثناء محاولة إرسال رسالة الديسكورد. بيانات الدخول:\n{msg}")
-        else:
-            Notification.objects.create(user=cadet, message=f"تم إنشاء حسابك. بيانات الدخول:\n{msg}")
+            if discord_user:
+                try:
+                    sent = discord_utils.send_dm(discord_user, msg)
+                    if not sent:
+                        Notification.objects.create(user=cadet, message=f"تم إنشاء حسابك لكن فشل إرسال رسالة الديسكورد. بيانات الدخول:\n{msg}")
+                except Exception:
+                    Notification.objects.create(user=cadet, message=f"تم إنشاء حسابك لكن حدث خطأ أثناء محاولة إرسال رسالة الديسكورد. بيانات الدخول:\n{msg}")
+            else:
+                Notification.objects.create(user=cadet, message=f"تم إنشاء حسابك. بيانات الدخول:\n{msg}")
 
-        role_id = request.POST.get('role_id') or os.getenv('ROLE_FINAL_ACCEPTANCE')
-        if role_id and discord_user:
-            try:
-                role_added = discord_utils.add_role(discord_user, role_id)
-                if not role_added:
-                    Notification.objects.create(user=cadet, message="تم إنشاء حسابك، ولكن فشل إضافة الدور في ديسكورد. تواصل مع الإدارة.")
-            except Exception:
-                Notification.objects.create(user=cadet, message="تم إنشاء حسابك، ولكن حدث خطأ أثناء محاولة إضافة الدور على ديسكورد.")
+            role_id = request.POST.get('role_id') or os.getenv('ROLE_FINAL_ACCEPTANCE')
+            if role_id and discord_user:
+                try:
+                    role_added = discord_utils.add_role(discord_user, role_id)
+                    if not role_added:
+                        Notification.objects.create(user=cadet, message="تم إنشاء حسابك، ولكن فشل إضافة الدور في ديسكورد. تواصل مع الإدارة.")
+                except Exception:
+                    Notification.objects.create(user=cadet, message="تم إنشاء حسابك، ولكن حدث خطأ أثناء محاولة إضافة الدور على ديسكورد.")
 
-        # سجّل الحدث بالعربي
-        try:
-            _audit_log('final_accept', user, target=f'application:{app.id}', details=f'المتقدم: {app.character_name} ({app.discord_id})؛ حساب: {username}')
+            # سجّل الحدث بالعربي
+            try:
+                _audit_log('final_accept', user, target=f'application:{app.id}', details=f'المتقدم: {app.character_name} ({app.discord_id})؛ حساب: {username}')
+            except Exception:
+                pass
         except Exception:
-            pass
+            try:
+                logging.exception('final_accept failed')
+            except Exception:
+                pass
+            request.session['error_message'] = 'حدث خطأ أثناء تنفيذ القبول النهائي. تم إعلام الإدارة.'
 
     elif action == 'retest':
         # Retest action disabled: prevent changing status to 'testing'. Log the attempted action.
@@ -1360,7 +1369,7 @@ def admin_application_action(request, app_id):
 
 
 
-@role_required(['admin','trainer'])
+@rank_required(applications_only=True)
 def admin_application_detail(request, app_id):
     app = get_object_or_404(Application, id=app_id)
     last = app.sessions.order_by('-finished_at', '-started_at').first()
