@@ -613,7 +613,7 @@
                     </div>
                 </div>
             </div>
-            <a href="{% if actor and actor.rank == 'trainer' %}{% url 'trainer_dashboard' %}{% else %}{% url 'admin_dashboard' %}{% endif %}" class="back-btn">
+            <a href="{% if actor and actor.rank == 'trainer' %}{% url 'trainer_dashboard' %}{% elif actor and actor.rank == 'cadet' %}{% url 'cadet_dashboard' %}{% else %}{% url 'admin_dashboard' %}{% endif %}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 العودة
             </a>

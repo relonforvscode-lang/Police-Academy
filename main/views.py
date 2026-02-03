@@ -133,7 +133,7 @@ def admin_dashboard(request):
     
     return render(request, 'admin_dashboard.html', {'users': users, 'actor': actor})
 
-@rank_required(dashboard_only=True)
+@rank_required()
 def admin_member_detail(request, uid):
     actor = get_session_user(request)
     target_user = get_object_or_404(User, id=uid)
@@ -383,7 +383,8 @@ def admin_assignments_view(request):
                 pass
         return redirect('admin_assignments')
 
-    trainers = User.objects.filter(rank='trainer')
+    # Allow any user to be assigned as a trainer except the developer account
+    trainers = User.objects.exclude(rank='dev').order_by('rank', 'full_name')
     cadets = User.objects.filter(rank='cadet')
     assignments = Assignment.objects.all().select_related('trainer', 'cadet')
     return render(request, 'assignments.html', {'trainers': trainers, 'cadets': cadets, 'assignments': assignments})
