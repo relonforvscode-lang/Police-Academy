@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>تقديم </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 1.5rem;
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-top: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Closed Message Card */
+        .closed-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem auto;
+            max-width: 700px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: slideUp 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .closed-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--danger), transparent);
+        }
+
+        .closed-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            color: var(--danger);
+            opacity: 0.8;
+        }
+
+        .closed-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .closed-card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .timer-container {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .timer-title {
+            color: var(--accent-yellow);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-yellow);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Application Form */
+        .application-form {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem auto;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .application-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary), var(--secondary), transparent);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-header h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .form-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            outline: none;
+            text-align: right;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-hint {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Success/Error Messages */
+        .message-alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.5s ease;
+        }
+
+        .message-alert.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .message-alert i {
+            font-size: 1.5rem;
+        }
+
+        .message-alert i.fa-exclamation-circle {
+            color: #fca5a5;
+        }
+
+        .message-alert i.fa-check-circle {
+            color: #10b981;
+        }
+
+        .message-alert span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Instructions Card */
+        .instructions-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 2.5rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        .instructions-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .instructions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions-list li {
+            padding: 0.75rem 0;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .instructions-list li:last-child {
+            border-bottom: none;
+        }
+
+        .instructions-list li::before {
+            content: '✓';
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .closed-card,
+            .application-form,
+            .instructions-card {
+                padding: 2rem;
+                margin: 1.5rem auto;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .closed-card,
+            .application-form,
+            .instructions-card {
+                padding: 1.5rem;
+            }
+            
+            .closed-icon {
+                font-size: 4rem;
+            }
+            
+            .timer-display {
+                font-size: 1.8rem;
+            }
+            
+            .form-input {
+                padding: 0.875rem 1rem;
+                font-size: 1rem;
+            }
+            
+            .submit-btn {
+                padding: 1rem;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles-js"></div>
+    
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-file-signature"></i> صفحة التقديم</h1>
+            <p>ابدأ رحلتك التدريبية من هنا - قدم طلبك الآن</p>
+        </div>
+
+        <!-- Error Message from Session -->
+        {% if error_message %}
+        <div class="message-alert" id="sessionErrorAlert" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3);">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error_message }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Error Message -->
+        {% if error %}
+        <div class="message-alert" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Closed Application -->
+        {% if not open %}
+        <div class="closed-card">
+            <div class="closed-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3><i class="fas fa-door-closed"></i> التقديم مغلق</h3>
+            
+            {% if closed_message %}
+                <p>{{ closed_message }}</p>
+            {% elif reopen_at %}
+                <p>التقديم مغلق مؤقتاً. سيُفتح في الوقت المحدد.</p>
+                <div class="timer-container">
+                    <div class="timer-title">
+                        <i class="fas fa-clock"></i>
+                        سيُفتح خلال:
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                        <div id="reopenAtDisplay" style="color:var(--text-muted);font-size:1rem">
+                            <!-- will be filled by JS with local datetime -->
+                        </div>
+                        <div class="timer-display" id="reopenTimer" data-ts="{{ reopen_at|date:'U' }}">
+                            {{ reopen_at|date:"Y-m-d H:i:s" }}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p>التقديم مغلق حالياً. يُرجى المحاولة في وقت لاحق.</p>
+            {% endif %}
+            
+            <div style="margin-top: 2rem; color: var(--text-muted); font-size: 0.95rem;">
+                <i class="fas fa-info-circle"></i>
+                لمزيد من المعلومات، يُرجى التواصل مع المسؤولين
+            </div>
+        </div>
+        {% else %}
+        <!-- Application Form -->
+        <div class="application-form" id="applyFormContainer">
+            <div class="form-header">
+                <h3><i class="fas fa-user-plus"></i> معلومات التقديم</h3>
+                <p>املأ المعلومات أدناه لبدء عملية التقديم</p>
+            </div>
+
+            {% if user_already_tested %}
+            <div class="testing-status-message" style="display:block;">
+                <div class="testing-status-icon">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <h2>لقد أجريت الاختبار من قبل</h2>
+                <p>لا يمكنك التقديم أو إجراء الاختبار مرة أخرى. إذا تعتقد أن هناك خطأ، تواصل مع المسؤول.</p>
+            </div>
+            {% else %}
+            
+            {% if discord_id %}
+            <!-- User authenticated with Discord -->
+            <form id="applyForm" method="POST" action="{% url 'apply_submit' %}">
+                {% csrf_token %}
+                
+                <!-- Discord User Info -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fab fa-discord"></i>
+                        حسابك على Discord
+                    </label>
+                    <div style="
+                        background: rgba(88, 101, 242, 0.1);
+                        border: 1px solid rgba(88, 101, 242, 0.3);
+                        padding: 1rem;
+                        border-radius: 0.5rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                    ">
+                        <i class="fab fa-discord" style="font-size: 1.5rem; color: #5865F2;"></i>
+                        <div>
+                            <p style="margin: 0; font-weight: 500;">{{ discord_username }}</p>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--text-muted);">{{ discord_id }}</p>
+                        </div>
+                    </div>
+                    <div class="input-hint">
+                        <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                        تم تسجيل الدخول بنجاح عبر Discord
+                    </div>
+                </div>
+                
+                <!-- Character Name -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user-circle"></i>
+                        اسم الشخصية
+                    </label>
+                    <input type="text" 
+                           name="character_name" 
+                           class="form-input" 
+                           placeholder="أدخل اسم الشخصية الذي تريد التقديم به" 
+                           required 
+                           autofocus>
+                    <div class="input-hint">
+                        <i class="fas fa-lightbulb"></i>
+                        هذا هو الاسم الذي سيعرفك به المدربون والزملاء
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-play-circle"></i>
+                    ابدأ التقديم
+                </button>
+            </form>
+            {% else %}
+            <!-- User not authenticated - show Discord login button -->
+            <div style="text-align: center; padding: 2rem;">
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-light);">
+                    يرجى تسجيل الدخول عبر Discord للبدء في التقديم
+                </p>
+                <a href="{% url 'discord_oauth_login' %}" class="submit-btn" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    text-decoration: none;
+                    padding: 1rem 2rem;
+                    background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
+                    color: white;
+                    font-weight: 600;
+                    border-radius: 0.5rem;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+                ">
+                    <i class="fab fa-discord" style="font-size: 1.5rem;"></i>
+                    تسجيل الدخول عبر Discord
+                </a>
+            </div>
+            {% endif %}
+            
+            {% endif %}
+        </div>
+
+        <!-- Instructions Card -->
+        <div class="instructions-card">
+            <h3><i class="fas fa-list-check"></i> تعليمات التقديم</h3>
+            <ul class="instructions-list">
+                <li>سجل الدخول باستخدام حساب Discord الخاص بك</li>
+                <li>سيتم ربط بيانات Discord الخاصة بك تلقائياً</li>
+                <li>اسم الشخصية سيكون هو المعرف الرئيسي لك في النظام</li>
+                <li>بعد الإرسال، ستنتقل إلى صفحة الاختبارات</li>
+                <li>لديك فرصة واحدة فقط للإجابة على الأسئلة</li>
+                <li>نتيجة التقديم ستصل عبر Discord</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 50, density: { enable: true, value_area: 800 } },
+                    color: { value: "#6366f1" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.2, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { 
+                        enable: true, 
+                        distance: 150, 
+                        color: "#6366f1", 
+                        opacity: 0.1, 
+                        width: 1 
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 1, 
+                        direction: "none", 
+                        random: true,
+                        out_mode: "out"
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" }
+                    }
+                }
+            });
+
+            // Form Submission Handler
+            const applyForm = document.getElementById('applyForm');
+            if (applyForm) {
+                applyForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const submitBtn = document.getElementById('submitBtn');
+                    const originalBtnHTML = submitBtn.innerHTML;
+                    
+                    // Show loading state
+                    submitBtn.innerHTML = '<span class="loading-spinner"></span> جاري معالجة طلبك...';
+                    submitBtn.disabled = true;
+                    
+                    try {
+                        const formData = new FormData(this);
+                        const response = await fetch(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.ok && data.app_id) {
+                            // Show success message
+                            showMessage('success', '✅ تم إرسال طلبك بنجاح! يتم نقلك إلى صفحة الاختبارات...');
+                            
+                            // Redirect to test page after delay
+                            setTimeout(() => {
+                                window.location.href = `/apply/start/${data.app_id}/`;
+                            }, 2000);
+                        } else {
+                            // Show error message
+                            showMessage('error', data.error || '❌ حدث خطأ أثناء معالجة طلبك');
+                            
+                            // Re-enable button
+                            submitBtn.innerHTML = originalBtnHTML;
+                            submitBtn.disabled = false;
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showMessage('error', '❌ حدث خطأ في الاتصال بالخادم');
+                        
+                        // Re-enable button
+                        submitBtn.innerHTML = originalBtnHTML;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            // Timer for reopen_at (if exists)
+            const reopenTimer = document.getElementById('reopenTimer');
+            if (reopenTimer) {
+                const ts = reopenTimer.dataset.ts;
+                let reopenDate = null;
+                if (ts) {
+                    reopenDate = new Date(parseInt(ts, 10) * 1000);
+                } else {
+                    try { reopenDate = new Date(reopenTimer.textContent); } catch (e) { reopenDate = null; }
+                }
+                // display scheduled open time in user's locale
+                const reopenAtDisplay = document.getElementById('reopenAtDisplay');
+                if (reopenAtDisplay && reopenDate) {
+                    reopenAtDisplay.textContent = 'الموعد المحدد للفتح (بالتوقيت المحلي): ' + reopenDate.toLocaleString();
+                }
+                let timerInterval = null;
+                updateReopenTimer(reopenDate, null);
+                timerInterval = setInterval(() => {
+                    updateReopenTimer(reopenDate, timerInterval);
+                }, 1000);
+            }
+
+            // Add focus effects to inputs
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 10px 25px rgba(99, 102, 241, 0.2)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                });
+            });
+
+            // Ensure particles canvas is properly sized
+            window.addEventListener('resize', function() {
+                const particlesContainer = document.getElementById('particles-js');
+                if (particlesContainer) {
+                    particlesContainer.style.width = '100%';
+                    particlesContainer.style.height = '100%';
+                }
+            });
+
+            // Auto focus on first input
+            const firstInput = document.querySelector('.form-input');
+            if (firstInput) {
+                setTimeout(() => {
+                    firstInput.focus();
+                }, 300);
+            }
+        });
+
+        // Function to update reopen timer
+        function updateReopenTimer(targetDate, intervalHandle) {
+            const timerElement = document.getElementById('reopenTimer');
+            if (!timerElement) return;
+            
+            const now = new Date();
+            const diff = targetDate - now;
+            
+            if (diff <= 0) {
+                timerElement.innerHTML = '<span style="color: #10b981;">✅ التقديم مفتوح الآن</span>';
+                timerElement.style.animation = 'pulse 2s infinite';
+                if (intervalHandle) clearInterval(intervalHandle);
+                // reload page so server can flip the state (auto-open)
+                setTimeout(() => { window.location.reload(); }, 1000);
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            let timerString = '';
+            if (days > 0) timerString += `${days} يوم `;
+            if (hours > 0) timerString += `${hours} ساعة `;
+            if (minutes > 0) timerString += `${minutes} دقيقة `;
+            timerString += `${seconds} ثانية`;
+            
+            timerElement.textContent = timerString;
+        }
+
+        // Poll server for changes (so admin close/open propagates without page refresh)
+        (function startApplyStatusPolling(){
+            let lastReopen = null;
+            const poll = async () => {
+                try {
+                    const res = await fetch('{% url "apply_status_api" %}');
+                    if (!res.ok) return;
+                    const data = await res.json();
+
+                    const isPageOpen = !!document.getElementById('applyFormContainer');
+                    // If server says open but page shows closed -> reload
+                    if (data.open && !isPageOpen) {
+                        window.location.reload();
+                        return;
+                    }
+                    // If server says closed but page shows open -> reload
+                    if (!data.open && isPageOpen) {
+                        window.location.reload();
+                        return;
+                    }
+
+                    // If still closed and reopen_at changed, update timer display
+                    if (!data.open && data.reopen_at) {
+                        if (lastReopen !== data.reopen_at) {
+                            lastReopen = data.reopen_at;
+                            const timerEl = document.getElementById('reopenTimer');
+                            const displayEl = document.getElementById('reopenAtDisplay');
+                            if (timerEl) {
+                                const newDate = new Date(parseInt(data.reopen_at,10) * 1000);
+                                timerEl.dataset.ts = data.reopen_at;
+                                if (displayEl) displayEl.textContent = 'الموعد المحدد للفتح (بالتوقيت المحلي): ' + newDate.toLocaleString();
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // ignore network errors silently
+                    console.debug('apply_status poll error', e);
+                }
+            };
+            // initial poll + periodic
+            poll();
+            setInterval(poll, 8000);
+        })();
+
+        // Function to show messages
+        function showMessage(type, text) {
+            // Remove existing messages
+            const existingAlert = document.querySelector('.message-alert:not([id="errorAlert"])');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-alert ${type}`;
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${text}</span>
+            `;
+            
+            // Add to container
+            const container = document.querySelector('.container');
+            if (container) {
+                container.insertBefore(messageDiv, container.children[1]);
+                
+                // Remove message after 5 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.style.opacity = '0';
+                        messageDiv.style.transform = 'translateY(-10px)';
+                        messageDiv.style.transition = 'all 0.3s';
+                        
+                        setTimeout(() => {
+                            if (messageDiv.parentNode) {
+                                messageDiv.remove();
+                            }
+                        }, 300);
+                    }
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

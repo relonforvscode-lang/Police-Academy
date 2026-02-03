@@ -9,15 +9,17 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
 from pathlib import Path
 import os
-from decouple import config
+from dotenv import load_dotenv
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file FIRST
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -30,8 +32,10 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # Read DEBUG from environment so Render can control it
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Allow hosts (Render will set proper host via environment or keep wildcard)
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+# Allow hosts (Render will set proper host via environment)
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+if not DEBUG and '*' in ALLOWED_HOSTS:
+    ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', 'localhost').split(',')]
 
 
 # Application definition
@@ -86,20 +90,37 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database configuration: prefer DATABASE_URL (Render provides it),
 # otherwise fall back to individual env vars.
-DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    }
+
+# Load environment variables from a .env file if present (for local dev).
+load_dotenv(dotenv_path=BASE_DIR / '.env')
+
+# Database configuration: prefer `DATABASE_URL` (e.g. Render), otherwise read
+# individual env vars. Default engine is MySQL to match your .env data.
+DB_URL = os.getenv('DATABASE_URL')
+if DB_URL:
+    parsed = dj_database_url.parse(DB_URL, conn_max_age=600)
+    # Ensure SSL for Postgres on managed providers like Render
+    if 'postgres' in DB_URL and parsed:
+        opts = parsed.setdefault('OPTIONS', {})
+        # Use require to enforce SSL; Render requires SSL connections to Postgres
+        opts.setdefault('sslmode', 'require')
+    DATABASES = {'default': parsed}
 else:
+    ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.mysql')
+    # For sqlite, fall back to a file if DB_NAME not set
+    if ENGINE == 'django.db.backends.sqlite3':
+        NAME = os.getenv('DB_NAME') or str(BASE_DIR / 'db.sqlite3')
+    else:
+        NAME = os.getenv('DB_NAME')
+
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME'),
-            'USER': os.environ.get('DB_USER'),
-            'PASSWORD': os.environ.get('DB_PASSWORD'),
-            'HOST': os.environ.get('DB_HOST'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
+            'ENGINE': ENGINE,
+            'NAME': NAME,
+            'USER': os.getenv('DB_USER', ''),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', '') or '',
+            'PORT': os.getenv('DB_PORT', '3306' if 'mysql' in ENGINE else ''),
         }
     }
 
@@ -147,6 +168,20 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 # Optional: allow Render's generated host if provided via env
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if os.getenv('CSRF_TRUSTED_ORIGINS') else []
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Production safety checks
+if not DEBUG:
+    if not SECRET_KEY:
+        raise ImproperlyConfigured('The environment variable DJANGO_SECRET_KEY must be set in production')

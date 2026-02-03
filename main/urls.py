@@ -20,5 +20,22 @@ urlpatterns = [
     path('api/read/<int:nid>/', views.mark_read, name='mark_read'),
     path('chat/api/messages/<int:other_id>/', views.chat_messages_api, name='chat_messages_api'),
     path('api/unread-messages/', views.get_unread_messages_count, name='get_unread_messages_count'),
+    # Discord OAuth
+    path('apply/discord-login/', views.discord_oauth_login, name='discord_oauth_login'),
+    path('apply/discord-callback/', views.discord_oauth_callback, name='discord_oauth_callback'),
+    # Apply & Test URLs
+    path('apply/', views.apply_page, name='apply_page'),
+    path('api/apply_status/', views.apply_status_api, name='apply_status_api'),
+    path('apply/submit/', views.apply_submit, name='apply_submit'),
+    path('apply/start/<int:app_id>/', views.apply_start_test, name='apply_start_test'),
+    path('apply/test/<int:session_id>/', views.apply_test_page, name='apply_test_page'),
+    path('apply/test/<int:session_id>/answer/', views.apply_submit_answer, name='apply_submit_answer'),
+    path('apply/finished/<int:app_id>/', views.apply_test_finished, name='apply_test_finished'),
+    # Admin applications manager
+    path('admin/applications/', views.admin_applications_view, name='admin_applications'),
+    path('admin/application/<int:app_id>/action/', views.admin_application_action, name='admin_application_action'),
+    path('admin/application/<int:app_id>/view/', views.admin_application_detail, name='admin_application_detail'),
+    path('admin/applications/control/', views.admin_applications_control, name='admin_applications_control'),
+    path('api/question/<int:qid>/', views.question_api, name='question_api'),
     
 ]    

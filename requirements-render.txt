@@ -1,0 +1,13 @@
+asgiref==3.11.0
+channels==4.3.2
+Django==6.0.1
+gunicorn==24.1.1
+packaging==26.0
+psycopg2-binary==2.9.11
+sqlparse==0.5.5
+tzdata==2025.3
+requests==2.31.0
+
+# Deployment and Database
+whitenoise==6.8.2
+dj-database-url==2.1.0

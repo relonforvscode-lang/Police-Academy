@@ -21,6 +21,14 @@
             --card-bg: rgba(255, 255, 255, 0.1);
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
+            
+            /* ألوان الرتب الجديدة */
+            --police-chief: linear-gradient(135deg, #FFD700, #FFA500);
+            --deputy-chief: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            --academy-commander: linear-gradient(135deg, #4169E1, #1E90FF);
+            --deputy-commander: linear-gradient(135deg, #32CD32, #00FA9A);
+            --trainer: linear-gradient(135deg, #FF6347, #FF4500);
+            --cadet: linear-gradient(135deg, #9370DB, #8A2BE2);
         }
 
         * {
@@ -51,7 +59,7 @@
 
         .form-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -186,80 +194,193 @@
             gap: 0.5rem;
         }
 
-        .role-grid {
+        /* تصميم جديد ومحسن للرتب */
+        .ranks-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-top: 0.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
         }
 
-        .role-option {
+        .rank-option {
             position: relative;
         }
 
-        .role-option input[type="radio"] {
+        .rank-option input[type="radio"] {
             position: absolute;
             opacity: 0;
+            width: 0;
+            height: 0;
         }
 
-        .role-card {
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.03);
+        .rank-card {
+            background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            border-radius: 20px;
+            padding: 2rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            height: 100%;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
-        .role-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-5px);
-            border-color: var(--primary);
+        .rank-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--rank-color);
+            transition: all 0.4s ease;
         }
 
-        .role-option input[type="radio"]:checked + .role-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-            border-color: var(--primary);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+        .rank-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .role-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
+        .rank-option input[type="radio"]:checked + .rank-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--rank-color);
+            box-shadow: 0 0 40px rgba(var(--rank-rgb), 0.2);
+        }
+
+        .rank-option input[type="radio"]:checked + .rank-card::before {
+            height: 8px;
+            box-shadow: 0 0 20px var(--rank-color);
+        }
+
+        .rank-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            transition: all 0.3s;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+            background: var(--rank-bg);
+            border: 3px solid var(--rank-border);
+            box-shadow: 0 0 20px rgba(var(--rank-rgb), 0.3);
+            transition: all 0.4s ease;
         }
 
-        .role-trainer .role-icon {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2));
-            color: #34d399;
+        .rank-option input[type="radio"]:checked + .rank-card .rank-icon {
+            transform: scale(1.15);
+            box-shadow: 0 0 30px rgba(var(--rank-rgb), 0.5);
         }
 
-        .role-cadet .role-icon {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.2));
-            color: #fbbf24;
-        }
-
-        .role-name {
-            font-size: 1.1rem;
+        .rank-name {
+            font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            background: var(--rank-color);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
         }
 
-        .role-desc {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            line-height: 1.4;
+        .rank-desc {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-weight: 500;
+            max-width: 90%;
+        }
+
+        /* ألوان وصور فريدة لكل رتبة */
+        .rank-police_chief .rank-icon {
+            --rank-color: linear-gradient(135deg, #FFD700, #FFA500);
+            --rank-bg: rgba(255, 215, 0, 0.15);
+            --rank-border: #FFD700;
+            --rank-rgb: 255, 215, 0;
+        }
+        
+        .rank-police_chief .rank-name {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .rank-deputy_chief .rank-icon {
+            --rank-color: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            --rank-bg: rgba(192, 192, 192, 0.15);
+            --rank-border: #C0C0C0;
+            --rank-rgb: 192, 192, 192;
+        }
+        
+        .rank-deputy_chief .rank-name {
+            background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .rank-academy_commander .rank-icon {
+            --rank-color: linear-gradient(135deg, #4169E1, #1E90FF);
+            --rank-bg: rgba(65, 105, 225, 0.15);
+            --rank-border: #4169E1;
+            --rank-rgb: 65, 105, 225;
+        }
+        
+        .rank-academy_commander .rank-name {
+            background: linear-gradient(135deg, #4169E1, #1E90FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .rank-deputy_commander .rank-icon {
+            --rank-color: linear-gradient(135deg, #32CD32, #00FA9A);
+            --rank-bg: rgba(50, 205, 50, 0.15);
+            --rank-border: #32CD32;
+            --rank-rgb: 50, 205, 50;
+        }
+        
+        .rank-deputy_commander .rank-name {
+            background: linear-gradient(135deg, #32CD32, #00FA9A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .rank-trainer .rank-icon {
+            --rank-color: linear-gradient(135deg, #FF6347, #FF4500);
+            --rank-bg: rgba(255, 99, 71, 0.15);
+            --rank-border: #FF6347;
+            --rank-rgb: 255, 99, 71;
+        }
+        
+        .rank-trainer .rank-name {
+            background: linear-gradient(135deg, #FF6347, #FF4500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .rank-cadet .rank-icon {
+            --rank-color: linear-gradient(135deg, #9370DB, #8A2BE2);
+            --rank-bg: rgba(147, 112, 219, 0.15);
+            --rank-border: #9370DB;
+            --rank-rgb: 147, 112, 219;
+        }
+        
+        .rank-cadet .rank-name {
+            background: linear-gradient(135deg, #9370DB, #8A2BE2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .password-strength {
@@ -426,6 +547,11 @@
             75% { transform: translateX(10px); }
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 1rem;
@@ -447,9 +573,22 @@
                 flex-direction: column;
             }
             
-            .role-grid {
+            .ranks-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
@@ -565,30 +704,100 @@
                     {% endif %}
 
                     {% if not edit_user %}
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column: span 2;">
                         <label class="form-label">
-                            <i class="fas fa-user-tag"></i>
-                            الدور
+                            <i class="fas fa-user-tie"></i>
+                            اختر الرتبة
+                            <span style="color: #94a3b8; font-weight: normal; font-size: 0.9rem;" id="rankInfo"></span>
                         </label>
-                        <div class="role-grid">
-                            <div class="role-option role-trainer">
-                                <input type="radio" name="role" value="trainer" id="roleTrainer" required>
-                                <label for="roleTrainer" class="role-card">
-                                    <div class="role-icon">
-                                        <i class="fas fa-chalkboard-teacher"></i>
+                        <div class="ranks-grid">
+                            <!-- رتبة رئيس الشرطة - level: 6 -->
+                            <div class="rank-option rank-police_chief" data-rank="police_chief" data-level="6">
+                                <input type="radio" name="rank" value="police_chief" id="rank_police_chief" required>
+                                <label for="rank_police_chief" class="rank-card">
+                                    <span class="rank-badge">الأعلى</span>
+                                    <div class="rank-icon">
+                                        <i class="fas fa-crown"></i>
                                     </div>
-                                    <div class="role-name">مدرب</div>
-                                    <div class="role-desc">Trainer</div>
+                                    <div class="rank-name">رئيس الشرطة</div>
+                                    <div class="rank-desc">
+                                        القائد الأعلى للشرطة، يتمتع بأعلى الصلاحيات والمسؤوليات في النظام
+                                    </div>
                                 </label>
                             </div>
-                            <div class="role-option role-cadet">
-                                <input type="radio" name="role" value="cadet" id="roleCadet" required>
-                                <label for="roleCadet" class="role-card">
-                                    <div class="role-icon">
+
+                            <!-- رتبة نائب الرئيس - level: 5 -->
+                            <div class="rank-option rank-deputy_chief" data-rank="deputy_chief" data-level="5">
+                                <input type="radio" name="rank" value="deputy_chief" id="rank_deputy_chief" required>
+                                <label for="rank_deputy_chief" class="rank-card">
+                                    <span class="rank-badge">نائب</span>
+                                    <div class="rank-icon">
+                                        <i class="fas fa-chess-queen"></i>
+                                    </div>
+                                    <div class="rank-name">نائب رئيس الشرطة</div>
+                                    <div class="rank-desc">
+                                        النائب الأول لرئيس الشرطة، يدير العمليات اليومية وينوب عن الرئيس
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- رتبة قائد الأكاديمية - level: 4 -->
+                            <div class="rank-option rank-academy_commander" data-rank="academy_commander" data-level="4">
+                                <input type="radio" name="rank" value="academy_commander" id="rank_academy_commander" required>
+                                <label for="rank_academy_commander" class="rank-card">
+                                    <span class="rank-badge">قائد</span>
+                                    <div class="rank-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="rank-name">رئيس الأكاديمية</div>
+                                    <div class="rank-desc">
+                                        المسؤول عن إدارة الأكاديمية والتدريب والإشراف على البرامج التعليمية
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- رتبة نائب القائد - level: 3 -->
+                            <div class="rank-option rank-deputy_commander" data-rank="deputy_commander" data-level="3">
+                                <input type="radio" name="rank" value="deputy_commander" id="rank_deputy_commander" required>
+                                <label for="rank_deputy_commander" class="rank-card">
+                                    <span class="rank-badge">نائب رئيس</span>
+                                    <div class="rank-icon">
+                                        <i class="fas fa-user-shield"></i>
+                                    </div>
+                                    <div class="rank-name">نائب رئيس الأكاديمية</div>
+                                    <div class="rank-desc">
+                                        يساعد قائد الأكاديمية في الإدارة والإشراف على الأنشطة التدريبية
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- رتبة المدرب - level: 2 -->
+                            <div class="rank-option rank-trainer" data-rank="trainer" data-level="2">
+                                <input type="radio" name="rank" value="trainer" id="rank_trainer" required>
+                                <label for="rank_trainer" class="rank-card">
+                                    <span class="rank-badge">مدرب</span>
+                                    <div class="rank-icon">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                    </div>
+                                    <div class="rank-name">مدرب</div>
+                                    <div class="rank-desc">
+                                        يقوم بتدريب وتأهيل الطلبة والمنتسبين الجدد في الأكاديمية
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- رتبة الطالب - level: 1 -->
+                            <div class="rank-option rank-cadet" data-rank="cadet" data-level="1">
+                                <input type="radio" name="rank" value="cadet" id="rank_cadet" required>
+                                <label for="rank_cadet" class="rank-card">
+                                    <span class="rank-badge">متدرب</span>
+                                    <div class="rank-icon">
                                         <i class="fas fa-user-graduate"></i>
                                     </div>
-                                    <div class="role-name">متدرب</div>
-                                    <div class="role-desc">Cadet</div>
+                                    <div class="rank-name">متدرب</div>
+                                    <div class="rank-desc">
+                                        المتدرب أو المنتسب الجديد في الأكاديمية، يخضع للتدريب والتعليم
+                                    </div>
                                 </label>
                             </div>
                         </div>
@@ -617,7 +826,8 @@
                 <ul class="info-list">
                     <li>اسم المستخدم يجب أن يكون فريداً ولا يمكن تغييره لاحقاً</li>
                     <li>كلمة المرور يجب أن تكون 6 أحرف على الأقل</li>
-                    <li>اختر الدور المناسب بعناية (مدرب أو متدرب)</li>
+                    <li>اختر الرتبة المناسبة بعناية حسب الصلاحيات المطلوبة</li>
+                    <li>كل رتبة لها صلاحيات مختلفة في النظام</li>
                 </ul>
             </div>
             {% endif %}
@@ -685,9 +895,72 @@
                 }, 2000);
             });
 
-            document.querySelectorAll('.role-option').forEach((option, index) => {
-                option.style.animationDelay = `${index * 0.2}s`;
+            // ===== نظام التحكم بالرتب بناءً على مستوى المستخدم =====
+            const rankOptions = document.querySelectorAll('.rank-option');
+            const userHierarchyLevel = parseInt('{{ actor.get_rank_hierarchy }}') || 0;
+            const rankInfo = document.getElementById('rankInfo');
+            let availableRanks = [];
+
+            rankOptions.forEach(option => {
+                const requiredLevel = parseInt(option.dataset.level);
+                const rankName = option.dataset.rank;
+                
+                if (userHierarchyLevel >= requiredLevel) {
+                    // الرتبة متاحة
+                    availableRanks.push(rankName);
+                    option.style.display = 'block';
+                    option.querySelector('input[type="radio"]').disabled = false;
+                } else {
+                    // الرتبة غير متاحة - إخفاء كامل
+                    option.style.display = 'none';
+                    option.querySelector('input[type="radio"]').disabled = true;
+                }
+            });
+
+            // تحديث نص المعلومات
+            if (rankInfo && availableRanks.length > 0) {
+                rankInfo.textContent = `(متاح ${availableRanks.length} رتب)`;
+                rankInfo.style.color = '#10b981';
+            }
+
+            // اختيار أول رتبة متاحة بشكل افتراضي
+            const firstAvailable = document.querySelector(`.rank-option:not([style*="display: none"]) input[type="radio"]`);
+            if (firstAvailable) {
+                firstAvailable.checked = true;
+                const card = firstAvailable.nextElementSibling;
+                card.style.transform = 'translateY(-10px) scale(1.03)';
+                card.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.4)';
+            }
+
+            // تأثيرات دخول بطاقات الرتب المتاحة فقط
+            document.querySelectorAll('.rank-option:not([style*="display: none"])').forEach((option, index) => {
+                option.style.animationDelay = `${index * 0.1}s`;
                 option.style.animation = 'slideUp 0.5s ease forwards';
+                option.style.opacity = '1';
+            });
+
+            // تأثير عند اختيار رتبة
+            document.querySelectorAll('.rank-option:not([style*="display: none"]) input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // إزالة التأثير من جميع البطاقات
+                    document.querySelectorAll('.rank-card').forEach(card => {
+                        card.style.transform = 'translateY(0) scale(1)';
+                        card.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)';
+                    });
+                    
+                    // تطبيق التأثير على البطاقة المحددة
+                    if (this.checked) {
+                        const card = this.nextElementSibling;
+                        card.style.transform = 'translateY(-10px) scale(1.03)';
+                        card.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.4)';
+                        
+                        // تأثير اهتزاز خفيف
+                        card.style.animation = 'shake 0.3s';
+                        setTimeout(() => {
+                            card.style.animation = '';
+                        }, 300);
+                    }
+                });
             });
         });
     </script>

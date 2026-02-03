@@ -602,12 +602,8 @@
                     <div class="user-details">
                         <div class="user-detail">
                             <i class="fas fa-user-tag"></i>
-                            <span class="badge badge-{{ target.role }}">
-                                {% if target.role == 'trainer' %}
-                                <i class="fas fa-chalkboard-teacher"></i> مدرب
-                                {% else %}
-                                <i class="fas fa-user-graduate"></i> متدرب
-                                {% endif %}
+                            <span class="badge badge-{{ target.rank }}">
+                                {{ target.get_rank_display }}
                             </span>
                         </div>
                         <div class="user-detail">
@@ -654,7 +650,7 @@
                     <div>
                         <h2 class="card-title">سجل التقييمات</h2>
                         <p style="color: #94a3b8; font-size: 0.9rem;">
-                            {% if target.role == 'trainer' %}
+                            {% if target.rank == 'trainer' %}
                             التقييمات بواسطة المتدربين
                             {% else %}
                             التقييمات بواسطة المدربين
@@ -668,7 +664,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>{% if target.role == 'trainer' %}المتدرب{% else %}المدرب{% endif %}</th>
+                                <th>{% if target.rank == 'trainer' %}المتدرب{% else %}المدرب{% endif %}</th>
                                 <th>الدرجة</th>
                                 <th>التعليقات</th>
                                 <th>التاريخ</th>
@@ -678,7 +674,7 @@
                             {% for eval in evaluations %}
                             <tr style="animation: fadeIn 0.5s ease forwards;">
                                 <td style="font-weight: 600;">
-                                    {% if target.role == 'trainer' %}
+                                    {% if target.rank == 'trainer' %}
                                     {{ eval.cadet.full_name }}
                                     {% else %}
                                     {{ eval.trainer.full_name }}

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>تفاصيل التقديم </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 1.5rem;
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Card */
+        .main-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary), var(--secondary), transparent);
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .applicant-info h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .applicant-id {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: var(--text-muted);
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .session-info {
+            text-align: left;
+            min-width: 300px;
+        }
+
+        .session-date {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .score-label {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-max {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Error Alert */
+        .error-alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.5s ease;
+        }
+
+        .error-alert i {
+            color: #fca5a5;
+            font-size: 1.5rem;
+        }
+
+        .error-alert span {
+            font-weight: 600;
+            color: #fca5a5;
+            font-size: 1.1rem;
+        }
+
+        /* Summary Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Answers Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .answers-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .answers-table thead {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .answers-table th {
+            padding: 1.25rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: right;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .answers-table td {
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: top;
+        }
+
+        .answers-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .answers-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .question-cell {
+            max-width: 350px;
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .answer-cell {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .answer-indicator {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .selected-answer {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .no-answer {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .correct-cell {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .status-cell {
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-correct {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-incorrect {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-skipped {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-muted);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .header-section {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .session-info {
+                text-align: right;
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .main-card {
+                padding: 1.5rem;
+            }
+            
+            .applicant-info h2 {
+                font-size: 1.6rem;
+            }
+            
+            .score-value {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .answers-table th,
+            .answers-table td {
+                padding: 1rem 0.75rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-card {
+                padding: 1.25rem;
+            }
+            
+            .applicant-info h2 {
+                font-size: 1.4rem;
+            }
+            
+            .score-card {
+                padding: 1rem;
+            }
+            
+            .score-value {
+                font-size: 1.8rem;
+            }
+            
+            .stat-card {
+                padding: 1.25rem;
+            }
+            
+            .stat-value {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles-js"></div>
+    
+    <div class="container">
+        <!-- Back Button -->
+        <a href="{% url 'admin_applications' %}" class="back-btn">
+            <i class="fas fa-arrow-right"></i>
+            رجوع إلى التقديمات
+        </a>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <!-- Error Message -->
+            {% if error %}
+            <div class="error-alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% else %}
+            <!-- Header Section -->
+            <div class="header-section">
+                <div class="applicant-info">
+                    <h2>
+                        <i class="fas fa-user-circle"></i>
+                        {{ application.character_name }}
+                    </h2>
+                    <div class="applicant-id">
+                        <i class="fab fa-discord"></i> {{ application.discord_id }}
+                    </div>
+                </div>
+                
+                <div class="session-info">
+                    <div class="session-date">
+                        <i class="far fa-calendar-alt"></i>
+                        جلسة الاختبار: {{ session.started_at }}
+                    </div>
+                    <div class="score-card">
+                        <div class="score-label">
+                            <i class="fas fa-star"></i>
+                            نتيجة الاختبار
+                        </div>
+                        <div class="score-value">{{ session.score|floatformat:1 }}</div>
+                        <div class="score-max">من 10</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-list-ol"></i>
+                    </div>
+                    <div class="stat-value">{{ total_questions }}</div>
+                    <div class="stat-label">عدد الأسئلة</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">{{ correct_count }}</div>
+                    <div class="stat-label">إجابات صحيحة</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-value">{{ incorrect_count }}</div>
+                    <div class="stat-label">إجابات خاطئة</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-value">{{ percentage }}%</div>
+                    <div class="stat-label">نسبة النجاح</div>
+                </div>
+            </div>
+
+            <!-- Answers Table -->
+            <div class="table-container">
+                <table class="answers-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">السؤال</th>
+                            <th style="width: 25%;">الإجابة المختارة</th>
+                            <th style="width: 25%;">الإجابة الصحيحة</th>
+                            <th style="width: 10%;">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in answers %}
+                        <tr>
+                            <!-- Question -->
+                            <td class="question-cell">
+                                {{ a.question.text }}
+                            </td>
+                            
+                            <!-- Selected Answer -->
+                            <td class="answer-cell">
+                                <div class="answer-indicator" 
+                                     style="background: {% if a.selected_index is not None %}{% if a.is_correct %}#10b981{% else %}#ef4444{% endif %}{% else %}#94a3b8{% endif %};">
+                                </div>
+                                <div class="selected-answer">
+                                    {% if a.selected_index is not None %}
+                                        {% if a.selected_index == 0 %}{{ a.question.option_a }}
+                                        {% elif a.selected_index == 1 %}{{ a.question.option_b }}
+                                        {% elif a.selected_index == 2 %}{{ a.question.option_c }}
+                                        {% elif a.selected_index == 3 %}{{ a.question.option_d }}
+                                        {% else %}غير محدد{% endif %}
+                                    {% else %}
+                                        <span class="no-answer">— لم يتم الإجابة —</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            
+                            <!-- Correct Answer -->
+                            <td class="correct-cell">
+                                {% if a.question.correct_index == 0 %}{{ a.question.option_a }}
+                                {% elif a.question.correct_index == 1 %}{{ a.question.option_b }}
+                                {% elif a.question.correct_index == 2 %}{{ a.question.option_c }}
+                                {% elif a.question.correct_index == 3 %}{{ a.question.option_d }}
+                                {% else %}—{% endif %}
+                            </td>
+                            
+                            <!-- Status -->
+                            <td class="status-cell">
+                                {% if a.selected_index is None %}
+                                    <span class="status-badge status-skipped">تخطى</span>
+                                {% elif a.is_correct %}
+                                    <span class="status-badge status-correct">صحيح</span>
+                                {% else %}
+                                    <span class="status-badge status-incorrect">خطأ</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 30, density: { enable: true, value_area: 800 } },
+                    color: { value: "#6366f1" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.2, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { 
+                        enable: true, 
+                        distance: 150, 
+                        color: "#6366f1", 
+                        opacity: 0.1, 
+                        width: 1 
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 1, 
+                        direction: "none", 
+                        random: true,
+                        out_mode: "out"
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" }
+                    }
+                }
+            });
+
+            // Ensure particles canvas is properly sized
+            window.addEventListener('resize', function() {
+                const particlesContainer = document.getElementById('particles-js');
+                if (particlesContainer) {
+                    particlesContainer.style.width = '100%';
+                    particlesContainer.style.height = '100%';
+                }
+            });
+
+            // Add hover effects to table rows
+            const tableRows = document.querySelectorAll('.answers-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(-10px)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+
+            // Add animation to stats cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Calculate and display percentage
+            function calculatePercentage() {
+                const totalQuestions = {{ total_questions }};
+                const correctAnswers = {{ correct_count }};
+                
+                if (totalQuestions > 0) {
+                    const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+                    const percentageCard = document.querySelector('.stat-card:nth-child(4) .stat-value');
+                    if (percentageCard) {
+                        percentageCard.textContent = percentage + '%';
+                    }
+                }
+            }
+
+            // Initialize percentage
+            calculatePercentage();
+        });
+    </script>
+</body>
+</html>

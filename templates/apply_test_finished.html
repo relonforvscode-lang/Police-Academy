@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>تم الانتهاء من الاختبار </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Finished Card */
+        .finished-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .finished-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, transparent, var(--accent-green), transparent);
+        }
+
+        .finished-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-green);
+            animation: bounce 1s infinite;
+        }
+
+        .finished-card h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .finished-card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: right;
+        }
+
+        .info-box h3 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box li {
+            padding: 0.75rem 0;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .info-box li::before {
+            content: '✓';
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: right;
+        }
+
+        .warning-box h3 {
+            color: var(--danger);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .warning-box p {
+            color: #fca5a5;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .finished-card {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .finished-card h1 {
+                font-size: 2rem;
+            }
+
+            .finished-icon {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles-js"></div>
+
+    <div class="container">
+        <div class="finished-card">
+            <div class="finished-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1>تم الانتهاء من الاختبار</h1>
+            
+            <p>
+                شكراً لك على المشاركة والإجابة على جميع الأسئلة بجد واجتهاد. 
+                تم تسجيل إجاباتك بنجاح.
+            </p>
+
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> ملخص البيانات</h3>
+                <ul>
+                    <li>اسم الشخصية: <strong>{{ application.character_name }}</strong></li>
+                    <li>Discord ID: <strong>{{ application.discord_id }}</strong></li>
+                    <li>تم الانتهاء من الاختبار بنجاح ✓</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3><i class="fas fa-exclamation-circle"></i> تنبيه مهم</h3>
+                <p>
+                    لا يمكنك إعادة الاختبار مرة أخرى. يُسمح بمحاولة واحدة فقط للجميع.
+                    سيتم تقييم إجاباتك من قبل الفريق الإداري قريباً.
+                </p>
+            </div>
+
+            <div style="color: var(--text-muted); margin-top: 2rem; font-size: 0.95rem; line-height: 1.6;">
+                <i class="fas fa-clock"></i>
+                <p>نتيجة التقديم ستصل إليك عبر Discord في أقرب وقت ممكن</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 40, density: { enable: true, value_area: 800 } },
+                    color: { value: "#6366f1" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.2, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { 
+                        enable: true, 
+                        distance: 150, 
+                        color: "#6366f1", 
+                        opacity: 0.1, 
+                        width: 1 
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 1, 
+                        direction: "none", 
+                        random: true,
+                        out_mode: "out"
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" }
+                    }
+                }
+            });
+
+            // Prevent going back to previous page
+            history.pushState(null, null, location.href);
+            window.addEventListener('popstate', function() {
+                history.pushState(null, null, location.href);
+            });
+
+            // Ensure particles canvas is properly sized
+            window.addEventListener('resize', function() {
+                const particlesContainer = document.getElementById('particles-js');
+                if (particlesContainer) {
+                    particlesContainer.style.width = '100%';
+                    particlesContainer.style.height = '100%';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

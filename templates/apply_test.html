@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>اختبار التقديم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .test-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .test-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .test-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Initial Countdown */
+        .countdown-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary), var(--secondary), transparent);
+        }
+
+        .countdown-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-yellow);
+        }
+
+        .countdown-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .countdown-timer {
+            font-size: 4.5rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-yellow);
+            margin: 1.5rem 0;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .countdown-message {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Test Area */
+        #testArea {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem auto;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary), var(--secondary), transparent);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .question-timer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            color: white;
+            padding: 2rem;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Options Container */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(255, 255, 255, 0.05));
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .option-btn:active {
+            transform: translateX(-5px);
+        }
+
+        .option-letter {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .option-btn:hover .option-letter {
+            background: var(--primary);
+            color: white;
+            transform: rotate(-10deg);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--primary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        /* Finished Card */
+        #finished {
+            display: none;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #finished::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent-green), transparent);
+        }
+
+        .finished-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-green);
+            animation: bounce 1s infinite;
+        }
+
+        #finished h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        #finished p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Warning Alert */
+        .warning-alert {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem auto;
+            max-width: 700px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.5s ease;
+        }
+
+        .warning-alert i {
+            color: var(--accent-yellow);
+            font-size: 1.5rem;
+        }
+
+        .warning-alert span {
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .test-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .countdown-card,
+            .question-card,
+            #finished {
+                padding: 2rem 1.5rem;
+            }
+            
+            .countdown-timer {
+                font-size: 3.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.3rem;
+            }
+            
+            .option-btn {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .test-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .countdown-card,
+            .question-card,
+            #finished {
+                padding: 1.5rem 1.25rem;
+            }
+            
+            .countdown-timer {
+                font-size: 2.8rem;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .option-btn {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .option-btn:hover {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles-js"></div>
+    
+    <div class="container">
+        <!-- Test Header -->
+        <div class="test-header">
+            <h1><i class="fas fa-brain"></i> اختبار التقديم</h1>
+            <p>أجب على الأسئلة بتركيز واختر الإجابة الصحيحة</p>
+        </div>
+
+        <!-- Initial Countdown -->
+        <div class="countdown-card" id="initialCountdown">
+            <div class="countdown-icon">
+                <i class="fas fa-hourglass-start"></i>
+            </div>
+            <h2>التحضير للاختبار</h2>
+            <div class="countdown-timer" id="initialTimer">{{ initial_countdown_seconds }}</div>
+            <p class="countdown-message">
+                استعد للبدء! ستظهر الأسئلة تلقائياً بعد انتهاء العد التنازلي
+            </p>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="warning-alert" id="timeWarning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>انتبه! الوقت المتبقي قليل. حاول الإجابة قبل انتهاء الوقت.</span>
+        </div>
+
+        <!-- Test Area -->
+        <div id="testArea">
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">
+                        <i class="fas fa-question-circle"></i>
+                        السؤال <span id="currentQuestion">1</span> من <span id="totalQuestions">{{ question_ids|length }}</span>
+                    </div>
+                    <div class="question-timer">
+                        <i class="fas fa-clock"></i>
+                        الوقت المتبقي: <span id="questionTimer">{{ question_time_seconds }}</span> ثانية
+                    </div>
+                </div>
+
+                <div class="question-text" id="questionText">
+                    جاري تحميل السؤال...
+                </div>
+
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be inserted here -->
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>التقدم</span>
+                        <span><span id="answeredQuestions">0</span>/<span>{{ question_ids|length }}</span></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finished Message -->
+        <div id="finished">
+            <div class="finished-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2><i class="fas fa-flag-checkered"></i> انتهى الاختبار</h2>
+            <p>شكراً لك على المشاركة في الاختبار. سيتم إعلامك بالنتائج قريباً.</p>
+            <div style="color: var(--text-muted); margin-top: 2rem; font-size: 0.95rem;">
+                <i class="fas fa-info-circle"></i>
+                يمكنك إغلاق هذه الصفحة الآن
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Global Variables
+        const sessionId = {{ session.id }};
+        const qids = {{ question_ids|safe }};
+        const questionTime = {{ question_time_seconds }};
+        const initialCountdown = {{ initial_countdown_seconds }};
+        // Extract token from URL to use for verification
+        const sessionToken = new URLSearchParams(window.location.search).get('token') || '';
+        
+        // Restore progress from localStorage if page was refreshed
+        let currentIndex = 0;
+        const savedProgress = localStorage.getItem(`test_session_${sessionId}_progress`);
+        const savedToken = localStorage.getItem(`test_session_${sessionId}_token`);
+        
+        // Only restore if tokens match (security check)
+        if (savedProgress && savedToken === sessionToken && sessionToken) {
+            const savedIndex = parseInt(savedProgress);
+            if (savedIndex >= 0 && savedIndex < qids.length) {
+                currentIndex = savedIndex;
+            }
+        }
+        
+        let questionTimer = questionTime;
+        let questionInterval = null;
+        let initialTimer = initialCountdown;
+        let initialInterval = null;
+        let hasWarningShown = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store token in localStorage for refresh validation
+            localStorage.setItem(`test_session_${sessionId}_token`, sessionToken);
+            
+            // Initialize Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 40, density: { enable: true, value_area: 800 } },
+                    color: { value: "#6366f1" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.2, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { 
+                        enable: true, 
+                        distance: 150, 
+                        color: "#6366f1", 
+                        opacity: 0.1, 
+                        width: 1 
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 1, 
+                        direction: "none", 
+                        random: true,
+                        out_mode: "out"
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" }
+                    }
+                }
+            });
+
+            // Check application status periodically
+            setInterval(checkAppStatus, 30000);
+
+            // Start initial countdown
+            startInitialCountdown();
+
+            // Ensure particles canvas is properly sized
+            window.addEventListener('resize', function() {
+                const particlesContainer = document.getElementById('particles-js');
+                if (particlesContainer) {
+                    particlesContainer.style.width = '100%';
+                    particlesContainer.style.height = '100%';
+                }
+            });
+        });
+
+        // Check if application is still open
+        async function checkAppStatus() {
+            try {
+                const response = await fetch('{% url "apply_status_api" %}');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (!data.open) {
+                        Swal.fire({
+                            title: 'تم إغلاق التقديم',
+                            text: 'عذراً، تم إغلاق باب التقديم أثناء الاختبار. سيتم توجيهك للصفحة الرئيسية.',
+                            icon: 'warning',
+                            confirmButtonText: 'حسناً',
+                            confirmButtonColor: '#f59e0b',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            didOpen: () => {
+                                Swal.getPopup().style.direction = 'rtl';
+                            }
+                        }).then(() => {
+                            window.location.href = '{% url "apply_page" %}';
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking app status:', error);
+            }
+        }
+
+        // Start initial countdown
+        function startInitialCountdown() {
+            const initElem = document.getElementById('initialTimer');
+            const initialCountdownCard = document.getElementById('initialCountdown');
+            
+            initialInterval = setInterval(() => {
+                initialTimer--;
+                initElem.textContent = initialTimer;
+                
+                // Add pulse effect when time is running out
+                if (initialTimer <= 5) {
+                    initElem.style.color = '#f59e0b';
+                    initElem.style.animation = 'pulse 0.5s infinite';
+                }
+                
+                if (initialTimer <= 0) {
+                    clearInterval(initialInterval);
+                    
+                    // Hide initial countdown with animation
+                    initialCountdownCard.style.opacity = '0';
+                    initialCountdownCard.style.transform = 'translateY(-20px)';
+                    initialCountdownCard.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        initialCountdownCard.style.display = 'none';
+                        document.getElementById('testArea').style.display = 'block';
+                        renderQuestion();
+                    }, 500);
+                }
+            }, 1000);
+        }
+
+        // Render current question
+        async function renderQuestion() {
+            const qid = qids[currentIndex];
+            
+            try {
+                // Show loading state
+                document.getElementById('questionText').textContent = 'جاري تحميل السؤال...';
+                document.getElementById('optionsContainer').innerHTML = '';
+                
+                // Fetch question data
+                const response = await fetch(`/api/question/${qid}/`);
+                if (!response.ok) throw new Error('Failed to fetch question');
+                
+                const data = await response.json();
+                
+                // Update question number
+                document.getElementById('currentQuestion').textContent = currentIndex + 1;
+                document.getElementById('totalQuestions').textContent = qids.length;
+                
+                // Update progress
+                updateProgress();
+                
+                // Display question
+                document.getElementById('questionText').textContent = data.text;
+                
+                // Display options
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                
+                const letters = ['أ', 'ب', 'ج', 'د', 'هـ', 'و'];
+                data.options.forEach((opt, i) => {
+                    if (i < letters.length) {
+                        const optionBtn = document.createElement('button');
+                        optionBtn.className = 'option-btn';
+                        optionBtn.onclick = () => submitAnswer(qid, i);
+                        optionBtn.style.animation = `slideUp 0.5s ease forwards ${i * 0.1}s`;
+                        optionBtn.style.opacity = '0';
+                        
+                        optionBtn.innerHTML = `
+                            <span>${opt}</span>
+                            <div class="option-letter">${letters[i]}</div>
+                        `;
+                        
+                        optionsContainer.appendChild(optionBtn);
+                    }
+                });
+                
+                // Start question timer
+                startQuestionTimer();
+                
+            } catch (error) {
+                console.error('Error loading question:', error);
+                document.getElementById('questionText').textContent = 'حدث خطأ في تحميل السؤال. يُرجى المحاولة مرة أخرى.';
+                
+                // Retry after 2 seconds
+                setTimeout(() => renderQuestion(), 2000);
+            }
+        }
+
+        // Start question timer
+        function startQuestionTimer() {
+            questionTimer = questionTime;
+            const timerElem = document.getElementById('questionTimer');
+            timerElem.textContent = questionTimer;
+            timerElem.style.color = '#6366f1';
+            
+            // Reset warning flag
+            hasWarningShown = false;
+            document.getElementById('timeWarning').style.display = 'none';
+            
+            clearInterval(questionInterval);
+            
+            questionInterval = setInterval(() => {
+                questionTimer--;
+                timerElem.textContent = questionTimer;
+                
+                // Show warning when time is running out
+                if (questionTimer <= 10 && !hasWarningShown) {
+                    hasWarningShown = true;
+                    document.getElementById('timeWarning').style.display = 'flex';
+                    timerElem.style.color = '#f59e0b';
+                    timerElem.style.animation = 'pulse 0.5s infinite';
+                }
+                
+                // Change to red when critical
+                if (questionTimer <= 5) {
+                    timerElem.style.color = '#ef4444';
+                }
+                
+                if (questionTimer <= 0) {
+                    clearInterval(questionInterval);
+                    timerElem.textContent = '0';
+                    
+                    // Show time out message
+                    document.getElementById('timeWarning').innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>انتهى الوقت! يتم التقدم للسؤال التالي...</span>
+                    `;
+                    document.getElementById('timeWarning').style.display = 'flex';
+                    
+                    // Submit null answer after 1 second
+                    setTimeout(() => {
+                        submitAnswer(qids[currentIndex], null);
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        // Submit answer and move to next question
+        async function submitAnswer(qid, idx) {
+            try {
+                // Show loading state on all buttons
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.7';
+                    btn.style.cursor = 'not-allowed';
+                });
+                
+                // Highlight selected option
+                if (idx !== null) {
+                    const selectedBtn = buttons[idx];
+                    if (selectedBtn) {
+                        selectedBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+                        selectedBtn.style.borderColor = '#6366f1';
+                    }
+                }
+                
+                // Send answer to server
+                const csrfToken = getCookie('csrftoken');
+                const formData = new URLSearchParams({
+                    question_id: qid,
+                    selected_index: idx === null ? '' : idx,
+                    token: sessionToken
+                });
+                
+                const response = await fetch(`/apply/test/${sessionId}/answer/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok) {
+                    // Move to next question
+                    currentIndex++;
+                    
+                    // Save progress to localStorage (so refresh doesn't lose progress)
+                    localStorage.setItem(`test_session_${sessionId}_progress`, currentIndex.toString());
+                    
+                    if (currentIndex >= qids.length) {
+                        // Test finished - redirect to finished page
+                        const appId = {{ session.application.id }};
+                        // Clear progress data
+                        localStorage.removeItem(`test_session_${sessionId}_progress`);
+                        localStorage.removeItem(`test_session_${sessionId}_token`);
+                        window.location.href = `/apply/finished/${appId}/`;
+                    } else {
+                        // Render next question
+                        renderQuestion();
+                    }
+                } else {
+                    // Show error
+                    alert(data.error || 'حدث خطأ في الإجابة. يُرجى المحاولة مرة أخرى.');
+                    
+                    // Re-enable buttons
+                    buttons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                        btn.style.cursor = 'pointer';
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error submitting answer:', error);
+                alert('حدث خطأ في الاتصال بالخادم. يُرجى المحاولة مرة أخرى.');
+                
+                // Re-enable buttons
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                });
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentIndex) / qids.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('answeredQuestions').textContent = currentIndex;
+        }
+
+        // Get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Prevent accidental page refresh/close during test
+        window.addEventListener('beforeunload', function(e) {
+            if (document.getElementById('testArea').style.display === 'block') {
+                e.preventDefault();
+                e.returnValue = 'هل أنت متأكد من مغادرة الصفحة؟ ستفقد تقدمك في الاختبار.';
+                return 'هل أنت متأكد من مغادرة الصفحة؟ ستفقد تقدمك في الاختبار.';
+            }
+        });
+    </script>
+</body>
+</html>

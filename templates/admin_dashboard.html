@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | النظام الاحترافي</title>
+    <title>لوحة التحكم </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         :root {
             --primary: #6366f1;
@@ -215,12 +216,35 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ألوان خاصة للفلترات */
+        .filter-btn[data-filter="all"]:hover,
+        .filter-btn[data-filter="all"].active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .filter-btn[data-filter="trainer"]:hover,
+        .filter-btn[data-filter="trainer"].active {
+            background: linear-gradient(135deg, #FF6347, #FF4500);
+        }
+
+        .filter-btn[data-filter="cadet"]:hover,
+        .filter-btn[data-filter="cadet"].active {
+            background: linear-gradient(135deg, #9370DB, #8A2BE2);
+        }
+
+        .filter-btn[data-filter="other"]:hover,
+        .filter-btn[data-filter="other"].active {
+            background: linear-gradient(135deg, #10b981, #34d399);
         }
 
         .action-buttons {
@@ -308,7 +332,6 @@
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -329,22 +352,50 @@
         }
 
         .badge {
-            padding: 6px 16px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        /* ألوان البادجات حسب الرتبة */
+        .badge-police_chief {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .badge-deputy_chief {
+            background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            color: #000;
+        }
+
+        .badge-academy_commander {
+            background: linear-gradient(135deg, #4169E1, #1E90FF);
+            color: white;
+        }
+
+        .badge-deputy_commander {
+            background: linear-gradient(135deg, #32CD32, #00FA9A);
+            color: #000;
         }
 
         .badge-trainer {
-            background: linear-gradient(135deg, #10b981, #34d399);
+            background: linear-gradient(135deg, #FF6347, #FF4500);
             color: white;
         }
 
         .badge-cadet {
-            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            background: linear-gradient(135deg, #9370DB, #8A2BE2);
+            color: white;
+        }
+
+        .badge-other {
+            background: linear-gradient(135deg, #10b981, #34d399);
             color: white;
         }
 
@@ -462,12 +513,85 @@
             .filter-buttons {
                 width: 100%;
                 justify-content: center;
+                flex-wrap: wrap;
             }
 
             .action-buttons {
                 width: 100%;
                 flex-direction: column;
             }
+        }
+
+        /* تحسينات SweetAlert */
+        .swal2-popup {
+            background: linear-gradient(145deg, #1e293b, #0f172a) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 24px !important;
+            color: #e2e8f0 !important;
+            backdrop-filter: blur(20px) !important;
+            padding: 2.5rem !important;
+        }
+
+        .swal2-title {
+            color: #e2e8f0 !important;
+            font-size: 1.8rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 1.5rem !important;
+        }
+
+        .swal2-html-container {
+            color: #94a3b8 !important;
+            font-size: 1.1rem !important;
+            margin: 1rem 0 2rem 0 !important;
+        }
+
+        .swal2-actions {
+            gap: 1.5rem !important;
+            margin-top: 2rem !important;
+        }
+
+        .swal2-confirm,
+        .swal2-cancel {
+            cursor: pointer !important;
+            padding: 12px 32px !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            transition: all 0.3s !important;
+            min-width: 120px !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #ef4444, #f87171) !important;
+            border: none !important;
+        }
+
+        .swal2-confirm:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3) !important;
+        }
+
+        .swal2-cancel {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #cbd5e1 !important;
+        }
+
+        .swal2-cancel:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .swal2-icon {
+            border-color: #ef4444 !important;
+            color: #ef4444 !important;
+            margin: 1rem auto 1.5rem !important;
+        }
+
+        /* تأثير عند hover على الأزرار */
+        .swal2-confirm:hover,
+        .swal2-cancel:hover {
+            cursor: pointer !important;
         }
     </style>
 </head>
@@ -516,30 +640,51 @@
                 <div class="stat-value" id="cadetsCount">0</div>
                 <div class="stat-label">المتدربين النشطين</div>
             </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-tag"></i>
+                </div>
+                <div class="stat-value" id="othersCount">0</div>
+                <div class="stat-label">مستخدمين آخرين</div>
+            </div>
         </div>
 
         <div class="actions-bar">
             <div class="filter-buttons">
-                <button class="filter-btn active" onclick="filterUsers('all')">
+                <button class="filter-btn active" data-filter="all" onclick="filterUsers('all')">
                     الكل
                 </button>
-                <button class="filter-btn" onclick="filterUsers('trainer')">
+                <button class="filter-btn" data-filter="trainer" onclick="filterUsers('trainer')">
                     <i class="fas fa-chalkboard-teacher"></i> المدربين
                 </button>
-                <button class="filter-btn" onclick="filterUsers('cadet')">
+                <button class="filter-btn" data-filter="cadet" onclick="filterUsers('cadet')">
                     <i class="fas fa-user-graduate"></i> المتدربين
+                </button>
+                <button class="filter-btn" data-filter="other" onclick="filterUsers('other')">
+                    <i class="fas fa-user-tag"></i> أخرى
                 </button>
             </div>
 
             <div class="action-buttons">
+                {% if actor.can_manage_assignments %}
                 <a href="{% url 'admin_assignments' %}" class="action-btn btn-success">
                     <i class="fas fa-link"></i>
                     إدارة التعيينات
                 </a>
+                {% endif %}
+                {% if actor.can_view_applications %}
+                <a href="{% url 'admin_applications' %}" class="action-btn btn-primary">
+                    <i class="fas fa-file-signature"></i>
+                    إدارة التقديمات
+                </a>
+                {% endif %}
+                {% if actor.can_add_users %}
                 <a href="{% url 'add_user' %}" class="action-btn btn-primary">
                     <i class="fas fa-plus"></i>
                     إضافة مستخدم جديد
                 </a>
+                {% endif %}
             </div>
         </div>
 
@@ -554,21 +699,28 @@
                         <tr>
                             <th>المستخدم</th>
                             <th>اسم المستخدم</th>
-                            <th>الدور الوظيفي</th>
+                            <th>الرتبة</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="usersBody">
                         {% for user in users %}
-                        <tr class="user-row" data-role="{{ user.role }}">
+                        <tr class="user-row" data-rank="{{ user.rank }}">
                             <td>
                                 <div class="user-info">
-                                    <div class="user-avatar">
+                                    <div class="user-avatar" style="
+                                        {% if user.rank == 'police_chief' %}background: linear-gradient(135deg, #FFD700, #FFA500);{% endif %}
+                                        {% if user.rank == 'deputy_chief' %}background: linear-gradient(135deg, #C0C0C0, #A9A9A9);{% endif %}
+                                        {% if user.rank == 'academy_commander' %}background: linear-gradient(135deg, #4169E1, #1E90FF);{% endif %}
+                                        {% if user.rank == 'deputy_commander' %}background: linear-gradient(135deg, #32CD32, #00FA9A);{% endif %}
+                                        {% if user.rank == 'trainer' %}background: linear-gradient(135deg, #FF6347, #FF4500);{% endif %}
+                                        {% if user.rank == 'cadet' %}background: linear-gradient(135deg, #9370DB, #8A2BE2);{% endif %}
+                                        {% if not user.rank or user.rank not in 'police_chief,deputy_chief,academy_commander,deputy_commander,trainer,cadet' %}background: linear-gradient(135deg, #6366f1, #8b5cf6);{% endif %}
+                                    ">
                                         {{ user.full_name|slice:":1" }}
                                     </div>
                                     <div>
                                         <div class="user-name">{{ user.full_name }}</div>
-                                        <!-- <div style="color: #94a3b8; font-size: 0.9rem;">{{ user.email|default:"لا يوجد بريد" }}</div> -->
                                     </div>
                                 </div>
                             </td>
@@ -579,13 +731,33 @@
                                 </code>
                             </td>
                             <td>
-                                {% if user.role == 'trainer' %}
+                                {% if user.rank == 'police_chief' %}
+                                <span class="badge badge-police_chief">
+                                    <i class="fas fa-crown"></i> رئيس الشرطة
+                                </span>
+                                {% elif user.rank == 'deputy_chief' %}
+                                <span class="badge badge-deputy_chief">
+                                    <i class="fas fa-chess-queen"></i> نائب رئيس الشرطة
+                                </span>
+                                {% elif user.rank == 'academy_commander' %}
+                                <span class="badge badge-academy_commander">
+                                    <i class="fas fa-graduation-cap"></i> قائد الأكاديمية
+                                </span>
+                                {% elif user.rank == 'deputy_commander' %}
+                                <span class="badge badge-deputy_commander">
+                                    <i class="fas fa-user-shield"></i> نائب قائد الأكاديمية
+                                </span>
+                                {% elif user.rank == 'trainer' %}
                                 <span class="badge badge-trainer">
                                     <i class="fas fa-chalkboard-teacher"></i> مدرب
                                 </span>
-                                {% elif user.role == 'cadet' %}
+                                {% elif user.rank == 'cadet' %}
                                 <span class="badge badge-cadet">
                                     <i class="fas fa-user-graduate"></i> متدرب
+                                </span>
+                                {% else %}
+                                <span class="badge badge-other">
+                                    <i class="fas fa-user-tag"></i> أخرى
                                 </span>
                                 {% endif %}
                             </td>
@@ -597,8 +769,7 @@
                                     <a href="{% url 'edit_user' user.id %}" class="action-icon edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{% url 'delete_user' user.id %}" class="action-icon delete"
-                                        onclick="return confirmDelete()">
+                                    <a href="#" class="action-icon delete delete-btn" data-user-id="{{ user.id }}" data-user-name="{{ user.full_name }}">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -621,6 +792,8 @@
         </div>
     </div>
 
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -637,23 +810,33 @@
             });
 
             updateStats();
+            setupDeleteButtons();
         });
 
         function updateStats() {
             const rows = document.querySelectorAll('.user-row');
-            let trainers = 0, cadets = 0;
+            let trainers = 0, cadets = 0, others = 0;
 
             rows.forEach(row => {
-                if (row.getAttribute('data-role') === 'trainer') trainers++;
-                if (row.getAttribute('data-role') === 'cadet') cadets++;
+                const rank = row.getAttribute('data-rank');
+                if (rank === 'trainer') {
+                    trainers++;
+                } else if (rank === 'cadet') {
+                    cadets++;
+                } else {
+                    others++;
+                }
             });
 
             animateCounter('trainersCount', trainers);
             animateCounter('cadetsCount', cadets);
+            animateCounter('othersCount', others);
         }
 
         function animateCounter(elementId, finalValue) {
             const element = document.getElementById(elementId);
+            if (!element) return;
+            
             const duration = 1000;
             const start = 0;
             const increment = finalValue / (duration / 16);
@@ -670,16 +853,39 @@
             }, 16);
         }
 
-        function filterUsers(role) {
+        function filterUsers(filter) {
             const buttons = document.querySelectorAll('.filter-btn');
             const rows = document.querySelectorAll('.user-row');
 
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            // تحديث حالة الأزرار
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.classList.add('active');
+                }
+            });
 
+            // تصفية الصفوف
             rows.forEach(row => {
-                const rowRole = row.getAttribute('data-role');
-                if (role === 'all' || rowRole === role) {
+                const rank = row.getAttribute('data-rank');
+                let showRow = false;
+
+                switch(filter) {
+                    case 'all':
+                        showRow = true;
+                        break;
+                    case 'trainer':
+                        showRow = (rank === 'trainer');
+                        break;
+                    case 'cadet':
+                        showRow = (rank === 'cadet');
+                        break;
+                    case 'other':
+                        showRow = (rank !== 'trainer' && rank !== 'cadet');
+                        break;
+                }
+
+                if (showRow) {
                     row.style.display = '';
                     row.style.animation = 'fadeIn 0.5s ease';
                 } else {
@@ -688,8 +894,59 @@
             });
         }
 
-        function confirmDelete() {
-            return confirm('هل أنت متأكد من حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.');
+        function setupDeleteButtons() {
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const userId = this.getAttribute('data-user-id');
+                    const userName = this.getAttribute('data-user-name');
+                    
+                    showDeleteConfirmation(userId, userName);
+                });
+            });
+        }
+
+        function showDeleteConfirmation(userId, userName) {
+            Swal.fire({
+                title: 'حذف المستخدم',
+                html: `
+                    <div style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                        <p style="font-size: 1.2rem; color: #e2e8f0; margin-bottom: 0.5rem;">
+                            هل أنت متأكد من حذف المستخدم؟
+                        </p>
+                        <p style="color: #94a3b8; margin-bottom: 1.5rem;">
+                            <strong style="color: #fca5a5;">${userName}</strong>
+                            <br>
+                            لا يمكن التراجع عن هذا الإجراء
+                        </p>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel',
+                    actions: 'swal2-actions',
+                    popup: 'swal2-popup'
+                },
+                buttonsStyling: false,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // عند تأكيد الحذف، نقوم بتوجيه المستخدم إلى رابط الحذف
+                    window.location.href = `/admin/delete-user/${userId}/`;
+                }
+            });
         }
 
         document.querySelectorAll('.stat-card').forEach(card => {
@@ -703,5 +960,4 @@
         });
     </script>
 </body>
-
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | النظام الاحترافي</title>
+    <title>تسجيل الدخول </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -238,101 +238,6 @@
             transform: translateY(-1px);
         }
 
-        .demo-section {
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .demo-title {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .demo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .demo-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 18px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .demo-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(to right, transparent, var(--primary), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .demo-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-3px);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .demo-card:hover::before {
-            opacity: 1;
-        }
-
-        .demo-role {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .demo-username {
-            font-family: 'Courier New', monospace;
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--text-light);
-            margin-bottom: 4px;
-        }
-
-        .demo-password {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .security-note {
-            background: rgba(16, 185, 129, 0.05);
-            border: 1px solid rgba(16, 185, 129, 0.1);
-            border-radius: 12px;
-            padding: 14px;
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -482,46 +387,7 @@
                 </button>
             </form>
 
-            <div class="demo-section">
-                <div class="demo-title">
-                    <i class="fas fa-vial"></i>
-                    بيانات الدخول التجريبية
-                </div>
-                
-                <div class="demo-grid">
-                    <div class="demo-card" onclick="fillCredentials(this, '1213', '1213')">
-                        <div class="demo-role">
-                            <i class="fas fa-user-shield"></i>
-                            مسؤول النظام
-                        </div>
-                        <div class="demo-username">1213</div>
-                        <div class="demo-password">كلمة المرور: 1213</div>
-                    </div>
 
-                    <div class="demo-card" onclick="fillCredentials(this, 'trainer', '12131213')">
-                        <div class="demo-role">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            مدرب 
-                        </div>
-                        <div class="demo-username">trainer</div>
-                        <div class="demo-password">كلمة المرور: 12131213</div>
-                    </div>
-                    
-                    <div class="demo-card" onclick="fillCredentials(this, 'cadet', '12131213')">
-                        <div class="demo-role">
-                            <i class="fas fa-user-graduate"></i>
-                            متدرب
-                        </div>
-                        <div class="demo-username">cadet</div>
-                        <div class="demo-password">كلمة المرور: 12131213</div>
-                    </div>
-                </div>
-                
-                <div class="security-note">
-                    <i class="fas fa-info-circle"></i>
-                    هذه بيانات تجريبية - يُرجى استخدامها لأغراض الاختبار فقط
-                </div>
-            </div>
         </div>
     </div>
 
@@ -584,110 +450,7 @@
                     this.parentElement.querySelector('.input-emoji').style.color = '#94a3b8';
                 });
             });
-            
-            // Debug: تسجيل بيانات الحقول الحالية
-            console.log('الحقول الحالية:');
-            console.log('- usernameInput:', usernameInput);
-            console.log('- passwordInput:', passwordInput);
         });
-        
-        // Function to fill credentials when demo card is clicked
-        function fillCredentials(card, username, password) {
-            console.log('تم استدعاء fillCredentials مع:');
-            console.log('- username:', username);
-            console.log('- password:', password);
-            
-            const usernameInput = document.getElementById('usernameInput');
-            const passwordInput = document.getElementById('passwordInput');
-            
-            console.log('- وجد usernameInput:', !!usernameInput);
-            console.log('- وجد passwordInput:', !!passwordInput);
-            
-            if (usernameInput && passwordInput) {
-                // تعبئة الحقول
-                usernameInput.value = username;
-                passwordInput.value = password;
-                
-                // إضافة تأثير للبطاقة التي تم النقر عليها
-                card.style.background = 'rgba(99, 102, 241, 0.1)';
-                
-                // إضافة تأثير لحقول الإدخال
-                usernameInput.style.borderColor = '#6366f1';
-                passwordInput.style.borderColor = '#6366f1';
-                
-                // إضافة تأثير للايموجي
-                const usernameEmoji = usernameInput.parentElement.querySelector('.input-emoji');
-                const passwordEmoji = passwordInput.parentElement.querySelector('.input-emoji');
-                
-                if (usernameEmoji) usernameEmoji.style.color = '#6366f1';
-                if (passwordEmoji) passwordEmoji.style.color = '#6366f1';
-                
-                setTimeout(() => {
-                    card.style.background = '';
-                    
-                    // إعادة لون الحقول بعد 2 ثانية
-                    usernameInput.style.borderColor = '';
-                    passwordInput.style.borderColor = '';
-                    
-                    if (usernameEmoji) usernameEmoji.style.color = '';
-                    if (passwordEmoji) passwordEmoji.style.color = '';
-                }, 2000);
-                
-                // عرض رسالة نجاح
-                showSuccessMessage(`تم تعبئة بيانات ${username}`);
-                
-                // التركيز على حقل كلمة المرور
-                setTimeout(() => {
-                    passwordInput.focus();
-                }, 300);
-            } else {
-                console.error('❌ لم يتم العثور على حقول الإدخال!');
-                // محاولة بديلة
-                const usernameInputAlt = document.querySelector('input[name="username"]');
-                const passwordInputAlt = document.querySelector('input[name="password"]');
-                
-                if (usernameInputAlt && passwordInputAlt) {
-                    usernameInputAlt.value = username;
-                    passwordInputAlt.value = password;
-                    console.log('✅ تم تعبئة البيانات بالطريقة البديلة');
-                }
-            }
-        }
-        
-        // دالة لعرض رسالة نجاح
-        function showSuccessMessage(message) {
-            // إنشاء عنصر الرسالة
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'error-alert';
-            messageDiv.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05))';
-            messageDiv.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-            messageDiv.style.color = '#10b981';
-            messageDiv.innerHTML = `
-                <i class="fas fa-check-circle" style="color: #10b981;"></i>
-                <span style="color: #10b981;">${message}</span>
-            `;
-            
-            // إضافة الرسالة قبل النموذج
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm && loginForm.parentNode) {
-                loginForm.parentNode.insertBefore(messageDiv, loginForm);
-                
-                // إزالة الرسالة بعد 3 ثواني
-                setTimeout(() => {
-                    if (messageDiv.parentNode) {
-                        messageDiv.style.opacity = '0';
-                        messageDiv.style.transform = 'translateY(-10px)';
-                        messageDiv.style.transition = 'all 0.3s';
-                        
-                        setTimeout(() => {
-                            if (messageDiv.parentNode) {
-                                messageDiv.remove();
-                            }
-                        }, 300);
-                    }
-                }, 3000);
-            }
-        }
     </script>
 </body>
 </html>

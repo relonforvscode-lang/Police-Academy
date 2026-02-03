@@ -1,23 +1,52 @@
 services:
   - type: web
-    name: academyproject-web
+    name: police-academy
     env: python
     region: oregon
-    plan: starter
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: gunicorn myproject.wsgi --bind 0.0.0.0:$PORT
+    plan: free
+    
+    # Build configuration
+    buildCommand: bash build/build.sh
+    startCommand: gunicorn myproject.wsgi --log-file -
+    
+    # Auto-deploy on git push
+    autoRedeploy: true
+    
+    # Environment variables
     envVars:
       - key: DJANGO_SECRET_KEY
-        value: "REPLACE_WITH_SECRET"
+        scope: run
+        value: ${DJANGO_SECRET_KEY}
+      
       - key: DEBUG
         value: "False"
+      
+      - key: ALLOWED_HOSTS
+        value: ${RENDER_EXTERNAL_HOSTNAME}
 
-databases:
-  - name: academyproject-db
-    plan: starter
+      - key: CSRF_TRUSTED_ORIGINS
+        scope: run
+        value: https://${RENDER_EXTERNAL_HOSTNAME}
+      
+      - key: DATABASE_URL
+        scope: run
+        value: ${DATABASE_URL}
+      
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+  
+  # PostgreSQL Database
+  - type: pgsql
+    name: police-academy-db
     region: oregon
+    plan: free
+    ipAllowList: []
+    
+    # Auto-backup
+    postgreSQLVersion: "15"
 
-# Notes:
-# - Replace the DJANGO_SECRET_KEY value in Render's dashboard or set it via Secrets.
-# - After connecting this repo in Render, Render will create the Web Service and Postgres
-#   using this manifest (you can adjust names/plan/region as needed in the Render UI).
+# Health check configuration
+healthCheckPath: /admin/
+
+# Docs reference
+# https://render.com/docs/infrastructure-as-code

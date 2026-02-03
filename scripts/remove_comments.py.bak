@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""
+Remove comments from project files (HTML templates, Python, JS, CSS, and others).
+Creates a .bak backup for each file before overwriting.
+"""
+import os, re, io, sys
+import tokenize
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+EXTS = ['.html', '.htm', '.py', '.js', '.css', '.md', '.txt']
+
+def remove_html_comments(text):
+    # Remove <!-- ... -->
+    text = re.sub(r'<!--([\s\S]*?)-->', '', text)
+    # Remove Django template comments {# ... #}
+    text = re.sub(r'{#([\s\S]*?)#}', '', text)
+    return text
+
+def remove_js_css_comments(text):
+    # Remove block comments /* ... */
+    text = re.sub(r'/\*([\s\S]*?)\*/', '', text)
+    # Remove // comments but avoid URLs like http:// or https://
+    def strip_line_comments(line):
+        i = line.find('//')
+        if i == -1:
+            return line
+        # if before // there's http: or https:
+        if 'http://' in line or 'https://' in line:
+            return line
+        return line[:i]
+    lines = [strip_line_comments(l) for l in text.splitlines()]
+    return '\n'.join(lines)
+
+def remove_py_comments(text):
+    # Use tokenize to remove COMMENT tokens while preserving code layout
+    try:
+        sio = io.StringIO(text)
+        out = []
+        prev_end = (1,0)
+        tokens = list(tokenize.generate_tokens(sio.readline))
+        for toknum, tokval, start, end, line in tokens:
+            if toknum == tokenize.COMMENT:
+                continue
+            # keep whitespace between tokens
+            srow, scol = start
+            erow, ecol = prev_end
+            if srow>erow:
+                out.append('\n'*(srow-erow))
+                out.append(' ' * scol)
+            else:
+                out.append(' ' * (scol - ecol))
+            out.append(tokval)
+            prev_end = end
+        return ''.join(out)
+    except Exception:
+        # fallback: remove lines starting with # (naive)
+        lines = []
+        for line in text.splitlines():
+            stripped = line.lstrip()
+            if stripped.startswith('#'):
+                continue
+            # remove inline # if not in http
+            if '#' in line and 'http' not in line:
+                idx = line.find('#')
+                line = line[:idx].rstrip()
+            lines.append(line)
+        return '\n'.join(lines)
+
+def process_file(path):
+    ext = os.path.splitext(path)[1].lower()
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            text = f.read()
+    except Exception:
+        return False, 'read error'
+    orig = text
+    new = text
+    if ext in ('.html', '.htm'):
+        new = remove_html_comments(new)
+        # also remove JS/CSS comments inside <script> or <style> by running patterns
+        # remove HTML comments already done
+        # remove empty multiple blank lines
+        new = re.sub(r"\n{3,}", '\n\n', new)
+    elif ext == '.py':
+        new = remove_py_comments(new)
+    elif ext in ('.js', '.css'):
+        new = remove_js_css_comments(new)
+    elif ext in ('.md', '.txt'):
+        # remove HTML-like and C-style comments
+        new = remove_html_comments(new)
+        new = re.sub(r'/\*([\s\S]*?)\*/', '', new)
+        # remove lines starting with <!-- or -->
+        new = '\n'.join([l for l in new.splitlines() if not l.strip().startswith('<!--') and not l.strip().startswith('-->')])
+    else:
+        return False, 'unsupported'
+
+    if new != orig:
+        # backup
+        bak = path + '.bak'
+        try:
+            if not os.path.exists(bak):
+                with open(bak, 'w', encoding='utf-8') as f:
+                    f.write(orig)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(new)
+            return True, 'modified'
+        except Exception as e:
+            return False, str(e)
+    return False, 'no change'
+
+def should_skip(dirpath):
+    skip = ['.git', '__pycache__', 'node_modules', 'venv', '.venv']
+    for s in skip:
+        if s in dirpath.split(os.sep):
+            return True
+    return False
+
+if __name__ == '__main__':
+    modified = []
+    for root, dirs, files in os.walk(ROOT):
+        if should_skip(root):
+            continue
+        for fn in files:
+            path = os.path.join(root, fn)
+            if os.path.splitext(fn)[1].lower() in EXTS:
+                ok, msg = process_file(path)
+                if ok:
+                    modified.append((path, msg))
+    print('Done. Modified files:')
+    for p,m in modified:
+        print(p, m)
+    print('Backups saved with .bak')

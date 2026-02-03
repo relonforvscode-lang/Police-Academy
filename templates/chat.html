@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محادثة مع {{ other.full_name }} - Chat</title>
+    <title>محادثة مع {{ other.full_name }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -604,9 +604,9 @@
                 if (window.history.length > 1) {
                     window.history.back();
                 } else {
-                    const role = "{{ user.role|default:'' }}";
-                    if (role === 'cadet') window.location.href = "{% url 'cadet_dashboard' %}";
-                    else if (role === 'trainer') window.location.href = "{% url 'trainer_dashboard' %}";
+                    const rank = "{{ user.rank|default:'' }}";
+                    if (rank === 'cadet') window.location.href = "{% url 'cadet_dashboard' %}";
+                    else if (rank === 'trainer') window.location.href = "{% url 'trainer_dashboard' %}";
                     else window.location.href = "{% url 'admin_dashboard' %}";
                 }
             });
