@@ -1228,7 +1228,6 @@
                         <i class="fas fa-hourglass-half"></i> إغلاق مع مؤقت
                     </button>
                 </form>
-                {% endif %}
         </div>
 
         <!-- Applications Container -->
@@ -1249,7 +1248,7 @@
                             <i class="fas fa-file-alt"></i>
                             {{ applications|length }} تقديم
                         </div>
-                        {% if user.role == 'trainer' %}
+                        {% if user.rank == 'trainer' %}
                         <a href="{% url 'trainer_dashboard' %}" class="dashboard-btn">
                             <i class="fas fa-arrow-right"></i>
                             العودة لقائمة المتدربين
@@ -1355,7 +1354,7 @@
                         <form method="POST" action="{% url 'admin_application_action' app.id %}" 
                               class="action-form" data-confirm="هل أنت متأكد من رفض هذا المتقدم؟" data-action="reject">
                             {% csrf_token %}
-                            <input type="hidden" name="action" value="reject">
+                            <input type="hidden" name="action" value="reject">0
                             <button type="submit" class="action-btn action-btn-danger">
                                 <i class="fas fa-times"></i>
                                 رفض
