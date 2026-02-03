@@ -494,11 +494,13 @@
 
             <!-- Action Buttons -->
             <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-bottom:1.25rem;">
+                {% if user.rank != 'trainer' %}
                 <form method="POST" action="{% url 'admin_application_action' application.id %}" onsubmit="return confirm('هل أنت متأكد من حذف هذا التقديم؟ سيتم حذف جميع بيانات الاختبار ولن يمكن استعادتها.');">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="delete">
                     <button type="submit" style="background:#ef4444;color:white;padding:0.5rem 0.75rem;border-radius:8px;border:none;font-weight:700;">حذف المتقدم</button>
                 </form>
+                {% endif %}
             </div>
 
             <!-- Summary Stats -->

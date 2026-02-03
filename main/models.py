@@ -56,6 +56,10 @@ class User(models.Model):
         """Check if user can view and manage applications (all except cadet)"""
         return self.rank != 'cadet'  # All except cadet
     
+    def can_manage_applications_global(self):
+        """Check if user can manage global application settings (open/close for all) - not trainer"""
+        return self.rank not in ['trainer', 'cadet']
+    
     def can_manage_user(self, target_user):
         """Check if this user can manage (edit/delete) another user"""
         # User cannot manage themselves

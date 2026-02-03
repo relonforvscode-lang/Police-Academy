@@ -40,7 +40,7 @@ def role_required(roles):
         return _wrapped_view
     return decorator
 
-def rank_required(min_rank=None, dashboard_only=False, applications_only=False):
+def rank_required(min_rank=None, dashboard_only=False, applications_only=False, applications_global=False):
     """Decorator to check user rank and dashboard access"""
     def decorator(view_func):
         def _wrapped_view(request, *args, **kwargs):
@@ -55,6 +55,10 @@ def rank_required(min_rank=None, dashboard_only=False, applications_only=False):
             # Check applications access
             if applications_only and not user.can_view_applications():
                 return render(request, 'error.html', {'message': 'You do not have access to applications.'})
+            
+            # Check global applications management (open/close all)
+            if applications_global and not user.can_manage_applications_global():
+                return render(request, 'error.html', {'message': 'You do not have permission to manage global application settings.'})
             
             # Check minimum rank if specified
             if min_rank and user.get_rank_hierarchy() < User.RANK_HIERARCHY.get(min_rank, 0):
@@ -1410,7 +1414,7 @@ def admin_application_detail(request, app_id):
     })
 
 
-@rank_required(dashboard_only=True)
+@rank_required(applications_only=True)
 def admin_applications_control(request):
     # Global open/close controls
     setting, _ = ApplicationSetting.objects.get_or_create(id=1)
