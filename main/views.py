@@ -1355,13 +1355,12 @@ def admin_application_action(request, app_id):
             pass
 
     elif action == 'hide':
-        app.is_hidden = True
-        app.save()
-
+        # Treat 'hide' from the list as permanent deletion so applicant can re-test
         try:
-            _audit_log('hide', user, target=f'application:{app.id}', details='تم إخفاء الطلب')
+            _audit_log('delete', user, target=f'application:{app.id}', details='تم حذف الطلب عبر زر الإخفاء (تحويل للحذف)')
         except Exception:
             pass
+        app.delete()
 
     elif action == 'delete':
         # Permanently remove the application and its related sessions/answers so applicant can re-test.

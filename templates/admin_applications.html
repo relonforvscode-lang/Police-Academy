@@ -1367,14 +1367,14 @@
                             عرض التفاصيل
                         </a>
 
-                        <!-- Hide (soft-delete) -->
+                        <!-- Delete (previously 'hide') - permanent removal so applicant can re-test -->
                         <form method="POST" action="{% url 'admin_application_action' app.id %}" 
-                              class="action-form" data-confirm="إخفاء هذه الطلبية من القائمة؟" data-action="hide">
+                              class="action-form" data-confirm="هل أنت متأكد من حذف هذا التقديم؟ سيتم حذف جميع بيانات الاختبار ولن يمكن استعادتها." data-action="hide">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="hide">
-                            <button type="submit" class="action-btn action-btn-secondary">
-                                <i class="fas fa-eye-slash"></i>
-                                إخفاء
+                            <button type="submit" class="action-btn action-btn-danger">
+                                <i class="fas fa-trash"></i>
+                                حذف
                             </button>
                         </form>
                         {% endif %}
