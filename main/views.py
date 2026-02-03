@@ -1357,6 +1357,14 @@ def admin_application_action(request, app_id):
         except Exception:
             pass
 
+    elif action == 'delete':
+        # Permanently remove the application and its related sessions/answers so applicant can re-test.
+        try:
+            _audit_log('delete', user, target=f'application:{app.id}', details='تم حذف الطلب نهائياً')
+        except Exception:
+            pass
+        app.delete()
+
     elif action == 'unhide':
         app.is_hidden = False
         app.save()
