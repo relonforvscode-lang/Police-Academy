@@ -1242,6 +1242,8 @@ def admin_application_action(request, app_id):
 
 `Password : {password}`
 
+`App :`https://heallstateacademy.onrender.com
+
 (<@{discord_user}>)
 **"""
             if discord_user:
