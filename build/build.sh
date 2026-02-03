@@ -10,8 +10,8 @@ echo "📦 Installing dependencies..."
 pip install --upgrade pip
 # If DATABASE_URL is Postgres (Render), install Render-friendly requirements without mysqlclient
 if [ -n "$DATABASE_URL" ] && echo "$DATABASE_URL" | grep -qi "postgres"; then
-	echo "Detected PostgreSQL DATABASE_URL — installing requirements-render.txt"
-	pip install -r requirements-render.txt
+	echo "Detected PostgreSQL DATABASE_URL — installing requirements.txt"
+	pip install -r requirements.txt
 else
 	pip install -r requirements.txt
 fi
