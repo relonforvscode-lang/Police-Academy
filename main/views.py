@@ -728,7 +728,25 @@ def get_unread_messages_count(request):
 
 # --- Discord OAuth Views ---
 def discord_oauth_login(request):
-    """Redirect to Discord OAuth authorization page"""
+    """Redirect to Discord OAuth authorization page with cooldown protection"""
+    # Check cooldown to prevent spam
+    current_time = timezone.now()
+    last_attempt = request.session.get('last_discord_attempt')
+    
+    if last_attempt:
+        last_attempt_time = datetime.datetime.fromisoformat(last_attempt)
+        time_since_attempt = (current_time - last_attempt_time).total_seconds()
+        
+        # 30 second cooldown between attempts
+        if time_since_attempt < 30:
+            remaining = int(30 - time_since_attempt)
+            request.session['error_message'] = f'تم الانتظار لمدة {remaining} ثانية قبل محاولة أخرى (منع الـ spam)'
+            return redirect('apply_page')
+    
+    # Update last attempt time
+    request.session['last_discord_attempt'] = current_time.isoformat()
+    request.session.modified = True
+    
     client_id = os.getenv('DISCORD_CLIENT_ID', '').strip()
     redirect_uri = request.build_absolute_uri('/apply/discord-callback/')
     
