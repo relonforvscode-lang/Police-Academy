@@ -864,7 +864,9 @@
                     localStorage.setItem(`test_session_${sessionId}_progress`, currentIndex.toString());
                     
                     if (currentIndex >= qids.length) {
-                        // Test finished - redirect to finished page
+                        // Test finished - redirect to finished page immediately without confirmation
+                        // Disable beforeunload warning before redirect
+                        window.onbeforeunload = null;
                         const appId = {{ session.application.id }};
                         // Clear progress data
                         localStorage.removeItem(`test_session_${sessionId}_progress`);

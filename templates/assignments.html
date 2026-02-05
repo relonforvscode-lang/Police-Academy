@@ -659,7 +659,7 @@
                             <select name="trainer_id" required>
                                 <option value="">-- اختر المدرب --</option>
                                 {% for trainer in trainers %}
-                                <option value="{{ trainer.id }}">{{ trainer.name }} (@{{ trainer.username }})</option>
+                                <option value="{{ trainer.id }}">{{ trainer.full_name }} (@{{ trainer.username }})</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -674,7 +674,7 @@
                             <select name="cadet_id" required>
                                 <option value="">-- اختر المتدرب --</option>
                                 {% for cadet in cadets %}
-                                <option value="{{ cadet.id }}">{{ cadet.name }} (@{{ cadet.username }})</option>
+                                <option value="{{ cadet.id }}">{{ cadet.full_name }} (@{{ cadet.username }})</option>
                                 {% endfor %}
                             </select>
                         </div>
