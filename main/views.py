@@ -15,6 +15,7 @@ import random
 import secrets
 import requests
 import json
+import time
 from urllib.parse import urlencode
 from django.conf import settings
 
@@ -768,8 +769,43 @@ def discord_oauth_login(request):
 
 
 def discord_oauth_callback(request):
-    """Handle Discord OAuth callback safely"""
+    """Handle Discord OAuth callback with retry logic for rate limiting"""
     logging.info(f"Discord callback received with GET params: {list(request.GET.keys())}")
+    
+    def make_request_with_retry(method, url, max_retries=3, **kwargs):
+        """Make HTTP request with exponential backoff retry for 429 errors"""
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == 'POST':
+                    response = requests.post(url, timeout=10, **kwargs)
+                else:
+                    response = requests.get(url, timeout=10, **kwargs)
+                
+                # If not rate limited, return response
+                if response.status_code != 429:
+                    return response
+                
+                # Handle rate limiting with exponential backoff
+                if attempt < max_retries - 1:
+                    retry_after = response.headers.get('Retry-After', str(2 ** attempt))
+                    try:
+                        wait_time = float(retry_after)
+                    except (ValueError, TypeError):
+                        wait_time = min(2 ** attempt, 10)  # Cap at 10 seconds
+                    
+                    logging.warning(f"Discord rate limited. Attempt {attempt + 1}/{max_retries}. Waiting {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    return response
+            except requests.exceptions.Timeout:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    logging.warning(f"Request timeout. Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    raise
+        
+        return response
     
     # Check for errors from Discord
     error = request.GET.get('error')
@@ -812,27 +848,34 @@ def discord_oauth_callback(request):
         }
         
         logging.info("Requesting access token from Discord...")
-        token_response = requests.post(
+        token_response = make_request_with_retry(
+            'POST',
             token_url,
             data=token_data,
-            timeout=10,
             headers={'Content-Type': 'application/x-www-form-urlencoded'}
         )
         
         logging.info(f"Token response status: {token_response.status_code}")
         
-        # Handle rate limiting
+        # Handle rate limiting (after retries)
         if token_response.status_code == 429:
             retry_after = token_response.headers.get('Retry-After', '60')
-            logging.error(f"Discord rate limited. Retry-After: {retry_after}s")
-            request.session['error_message'] = 'Discord service rate limited. Please try again in a moment.'
+            logging.error(f"Discord rate limited after retries. Retry-After: {retry_after}s")
+            request.session['error_message'] = f'Discord service rate limited. Please wait {retry_after} seconds and try again.'
             return redirect('apply_page')
         
         # Handle other error responses
         if token_response.status_code >= 400:
-            error_text = token_response.text
+            error_text = token_response.text[:200]  # Limit error text length
             logging.error(f"Token exchange failed ({token_response.status_code}): {error_text}")
-            request.session['error_message'] = 'Failed to exchange authorization code. Please try again.'
+            
+            # Check for common issues
+            if token_response.status_code == 401:
+                request.session['error_message'] = 'Invalid Discord credentials. Please contact the administrator.'
+            elif token_response.status_code == 403:
+                request.session['error_message'] = 'Discord authentication forbidden. Please try again later.'
+            else:
+                request.session['error_message'] = 'Failed to exchange authorization code. Please try again.'
             return redirect('apply_page')
         
         # Parse token response
@@ -859,12 +902,23 @@ def discord_oauth_callback(request):
         }
         
         logging.info("Fetching user info from Discord...")
-        user_response = requests.get(user_url, headers=user_headers, timeout=10)
+        user_response = make_request_with_retry(
+            'GET',
+            user_url,
+            headers=user_headers
+        )
         
         logging.info(f"User info response status: {user_response.status_code}")
         
+        # Handle rate limiting (after retries)
+        if user_response.status_code == 429:
+            retry_after = user_response.headers.get('Retry-After', '60')
+            logging.error(f"Discord rate limited after retries (user info). Retry-After: {retry_after}s")
+            request.session['error_message'] = f'Discord service rate limited. Please wait {retry_after} seconds and try again.'
+            return redirect('apply_page')
+        
         if user_response.status_code >= 400:
-            error_text = user_response.text
+            error_text = user_response.text[:200]
             logging.error(f"User info request failed ({user_response.status_code}): {error_text}")
             request.session['error_message'] = 'Failed to fetch your Discord user information.'
             return redirect('apply_page')
