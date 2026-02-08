@@ -774,6 +774,9 @@ def discord_oauth_callback(request):
     
     def make_request_with_retry(method, url, max_retries=3, **kwargs):
         """Make HTTP request with exponential backoff retry for 429 errors"""
+        response = None
+        last_exception = None
+        
         for attempt in range(max_retries):
             try:
                 if method.upper() == 'POST':
@@ -797,15 +800,25 @@ def discord_oauth_callback(request):
                     time.sleep(wait_time)
                 else:
                     return response
-            except requests.exceptions.Timeout:
+            except requests.exceptions.Timeout as e:
+                last_exception = e
                 if attempt < max_retries - 1:
                     wait_time = 2 ** attempt
                     logging.warning(f"Request timeout. Retrying in {wait_time}s...")
                     time.sleep(wait_time)
                 else:
                     raise
+            except Exception as e:
+                last_exception = e
+                raise
         
-        return response
+        # If all retries exhausted, return last response
+        if response is not None:
+            return response
+        elif last_exception:
+            raise last_exception
+        else:
+            raise Exception("Request failed after retries")
     
     # Check for errors from Discord
     error = request.GET.get('error')
