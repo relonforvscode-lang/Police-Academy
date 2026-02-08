@@ -800,16 +800,21 @@ def discord_oauth_callback(request):
                     time.sleep(wait_time)
                 else:
                     return response
-            except requests.exceptions.Timeout as e:
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
                 last_exception = e
                 if attempt < max_retries - 1:
                     wait_time = 2 ** attempt
-                    logging.warning(f"Request timeout. Retrying in {wait_time}s...")
+                    logging.warning(f"Connection error (timeout). Attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
                     time.sleep(wait_time)
                 else:
                     raise
+            except requests.exceptions.RequestException as e:
+                last_exception = e
+                logging.error(f"Request exception: {type(e).__name__}: {str(e)}")
+                raise
             except Exception as e:
                 last_exception = e
+                logging.error(f"Unexpected exception in make_request_with_retry: {type(e).__name__}: {str(e)}")
                 raise
         
         # If all retries exhausted, return last response
@@ -957,7 +962,6 @@ def discord_oauth_callback(request):
         # Store in session
         request.session['discord_id'] = str(discord_id)
         request.session['discord_username'] = username
-        request.session.modified = True
         
         # Redirect to apply page
         return redirect('apply_page')
