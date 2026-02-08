@@ -34,7 +34,11 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allow hosts (Render will set proper host via environment)
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-if not DEBUG and '*' in ALLOWED_HOSTS:
+if DEBUG:
+    # In development, allow testserver and localhost variants
+    ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS] + ['testserver', '127.0.0.1', 'localhost']
+    ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))  # Remove duplicates
+elif '*' in ALLOWED_HOSTS:
     ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', 'localhost').split(',')]
 
 
@@ -165,8 +169,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Honor the 'X-Forwarded-Proto' header for request.is_secure() - only in production
+# In development, we use HTTP only
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Security settings for production
 if not DEBUG:
