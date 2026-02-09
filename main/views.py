@@ -780,7 +780,7 @@ def discord_oauth_callback(request):
     import logging
     import requests
     from django.utils import timezone
-    
+
     logger.error(
     "CALLBACK | secure=%s | proto=%s | host=%s",
     request.is_secure(),
@@ -790,7 +790,6 @@ def discord_oauth_callback(request):
 
     logger = logging.getLogger('discord_oauth_debug')
 
-    # 🧹 تنظيف أي flag قديم عالق
     request.session.pop('discord_oauth_in_progress', None)
 
     code = request.GET.get('code')
@@ -971,7 +970,7 @@ def apply_submit(request):
         pass
 
     # 🧹 تنظيف الجلسة بعد الاستخدام
-    request.session.pop('discord_id', None)discord_oauth_callback
+    request.session.pop('discord_id', None)
     request.session.pop('discord_username', None)
     request.session.modified = True
 
