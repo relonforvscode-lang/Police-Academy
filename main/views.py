@@ -730,341 +730,179 @@ def get_unread_messages_count(request):
 # --- Discord OAuth Views ---
 def discord_oauth_login(request):
     """Redirect to Discord OAuth authorization page with cooldown protection"""
-    # Check cooldown to prevent spam
+    from django.utils import timezone
+    import datetime
+    import os
+    from urllib.parse import urlencode
+
     current_time = timezone.now()
     last_attempt = request.session.get('last_discord_attempt')
-    
+
+    # Cooldown protection (30 seconds)
     if last_attempt:
-        last_attempt_time = datetime.datetime.fromisoformat(last_attempt)
-        time_since_attempt = (current_time - last_attempt_time).total_seconds()
-        
-        # 30 second cooldown between attempts
-        if time_since_attempt < 30:
-            remaining = int(30 - time_since_attempt)
-            request.session['error_message'] = f'تم الانتظار لمدة {remaining} ثانية قبل محاولة أخرى (منع الـ spam)'
-            return redirect('apply_page')
-    
-    # Update last attempt time
+        try:
+            last_attempt_time = datetime.datetime.fromisoformat(last_attempt)
+            time_since = (current_time - last_attempt_time).total_seconds()
+            if time_since < 30:
+                remaining = int(30 - time_since)
+                request.session['error_message'] = f'يرجى الانتظار {remaining} ثانية قبل المحاولة مرة أخرى.'
+                return redirect('apply_page')
+        except Exception:
+            pass
+
     request.session['last_discord_attempt'] = current_time.isoformat()
     request.session.modified = True
-    
+
     client_id = os.getenv('DISCORD_CLIENT_ID', '').strip()
     redirect_uri = request.build_absolute_uri('/apply/discord-callback/')
-    
+
     if not client_id:
-        request.session['error_message'] = 'Discord OAuth لم يتم تكوينه. تأكد من إضافة DISCORD_CLIENT_ID في ملف .env'
+        request.session['error_message'] = 'Discord OAuth غير مهيأ على السيرفر.'
         return redirect('apply_page')
-    
-    # Discord OAuth2 authorization endpoint
-    auth_url = 'https://discord.com/api/oauth2/authorize'
+
     params = {
         'client_id': client_id,
         'redirect_uri': redirect_uri,
         'response_type': 'code',
         'scope': 'identify',
     }
-    
-    full_url = f"{auth_url}?{urlencode(params)}"
-    return redirect(full_url)
+
+    auth_url = f"https://discord.com/api/oauth2/authorize?{urlencode(params)}"
+    return redirect(auth_url)
+
 
 
 def discord_oauth_callback(request):
-    """Handle Discord OAuth callback with retry logic for rate limiting and session safety"""
-    import logging
     import os
     import time
-    import requests
     import json
-    from django.shortcuts import redirect
+    import logging
+    import requests
+    from django.utils import timezone
 
     logger = logging.getLogger('discord_oauth_debug')
-    logger.info(f"=== DISCORD OAUTH CALLBACK STARTED ===")
-    logger.info(f"GET params: {list(request.GET.keys())}")
-    logger.info(f"Request path: {request.path}")
-    logger.info(f"Request method: {request.method}")
 
-    # ----------------------------
-    # 🛑 حماية: منع استخدام نفس code مرتين
-    # ----------------------------
+    # 🧹 تنظيف أي flag قديم عالق
+    request.session.pop('discord_oauth_in_progress', None)
+
     code = request.GET.get('code')
-    logger.info(f"Authorization code present: {bool(code)}")
-    if code:
-        logger.info(f"Code value: {code[:50]}..." if len(code) > 50 else f"Code value: {code}")
-    
-    if request.session.get('discord_oauth_code_used') == code:
-        logger.warning(f"Code already used: {code}")
-        request.session['error_message'] = 'تم استخدام رابط Discord مسبقًا.'
+    error = request.GET.get('error')
+
+    if error:
+        request.session['error_message'] = 'تم إلغاء تسجيل الدخول عبر Discord.'
         return redirect('apply_page')
 
-    # ----------------------------
-    # 🛑 حماية: منع double callback / refresh
-    # ----------------------------
-    if request.session.get('discord_oauth_in_progress'):
-        logger.warning("OAuth callback already in progress")
+    if not code:
+        request.session['error_message'] = 'لم يتم استلام رمز التحقق من Discord.'
+        return redirect('apply_page')
+
+    # 🛡️ منع إعادة استخدام نفس code
+    used_code = request.session.get('discord_oauth_code_used')
+    if used_code == code:
         return redirect('apply_page')
 
     request.session['discord_oauth_in_progress'] = True
-    if code:
-        request.session['discord_oauth_code_used'] = code
-    logger.info("Session flags set, proceeding with OAuth")
+    request.session['discord_oauth_code_used'] = code
+    request.session.modified = True
 
-    def make_request_with_retry(method, url, max_retries=3, **kwargs):
-        """Make HTTP request with exponential backoff retry for 429 errors"""
-        response = None
-        last_exception = None
-        
-        for attempt in range(max_retries):
+    def request_with_retry(method, url, **kwargs):
+        for attempt in range(3):
             try:
-                if method.upper() == 'POST':
-                    response = requests.post(url, timeout=10, **kwargs)
-                else:
-                    response = requests.get(url, timeout=10, **kwargs)
-                
-                # If not rate limited, return response
-                if response.status_code != 429:
-                    return response
-                
-                # Handle rate limiting with exponential backoff
-                if attempt < max_retries - 1:
-                    retry_after = response.headers.get('Retry-After', str(2 ** attempt))
-                    try:
-                        wait_time = float(retry_after)
-                    except (ValueError, TypeError):
-                        wait_time = min(2 ** attempt, 10)  # Cap at 10 seconds
-                    
-                    logging.warning(f"Discord rate limited. Attempt {attempt + 1}/{max_retries}. Waiting {wait_time}s...")
-                    time.sleep(wait_time)
-                else:
-                    return response
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
-                last_exception = e
-                if attempt < max_retries - 1:
-                    wait_time = 2 ** attempt
-                    logging.warning(f"Connection error (timeout). Attempt {attempt + 1}/{max_retries}. Retrying in {wait_time}s...")
-                    time.sleep(wait_time)
-                else:
+                r = requests.request(method, url, timeout=10, **kwargs)
+                if r.status_code != 429:
+                    return r
+                time.sleep(2 ** attempt)
+            except requests.RequestException:
+                if attempt == 2:
                     raise
-            except requests.exceptions.RequestException as e:
-                last_exception = e
-                logging.error(f"Request exception: {type(e).__name__}: {str(e)}")
-                raise
-            except Exception as e:
-                last_exception = e
-                logging.error(f"Unexpected exception in make_request_with_retry: {type(e).__name__}: {str(e)}")
-                raise
-        
-        # If all retries exhausted, return last response
-        if response is not None:
-            return response
-        elif last_exception:
-            raise last_exception
-        else:
-            raise Exception("Request failed after retries")
-    
+        return None
+
     try:
-        # ----------------------------
-        # Check for errors from Discord
-        # ----------------------------
-        error = request.GET.get('error')
-        if error:
-            error_desc = request.GET.get('error_description', 'Unknown error')
-            logger.error(f"[ERROR] Discord rejected: {error} - {error_desc}")
-            request.session['error_message'] = f'Discord rejected the request: {error}'
-            return redirect('apply_page')
-        
-        if not code:
-            logger.error(f"[ERROR] No authorization code received")
-            request.session['error_message'] = 'Authorization code not received from Discord. Please try again.'
-            return redirect('apply_page')
-        
-        logger.info(f"[OK] Authorization code received")
-        
-        # ----------------------------
-        # Get OAuth configuration
-        # ----------------------------
         client_id = os.getenv('DISCORD_CLIENT_ID', '').strip()
         client_secret = os.getenv('DISCORD_CLIENT_SECRET', '').strip()
-        
-        logger.info(f"Client ID configured: {bool(client_id)}")
-        logger.info(f"Client Secret configured: {bool(client_secret)}")
-        
+
         if not client_id or not client_secret:
-            logger.error("[ERROR] Discord OAuth credentials not configured")
-            request.session['error_message'] = 'Server configuration error: Discord OAuth not configured'
+            request.session['error_message'] = 'Discord OAuth غير مهيأ بشكل صحيح.'
             return redirect('apply_page')
-        
-        # Build redirect URI - MUST match Discord console settings exactly
+
         redirect_uri = request.build_absolute_uri('/apply/discord-callback/')
-        logger.info(f"[OK] Redirect URI: {redirect_uri}")
-        
-        # ----------------------------
-        # Exchange authorization code for access token
-        # ----------------------------
-        token_url = 'https://discord.com/api/v10/oauth2/token'
-        token_data = {
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': redirect_uri,
-        }
-        
-        logger.info(f"[SEND] Requesting access token from Discord...")
-        logger.debug(f"Token URL: {token_url}")
-        
-        token_response = make_request_with_retry(
+
+        token_res = request_with_retry(
             'POST',
-            token_url,
-            data=token_data,
+            'https://discord.com/api/v10/oauth2/token',
+            data={
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'grant_type': 'authorization_code',
+                'code': code,
+                'redirect_uri': redirect_uri,
+            },
             headers={'Content-Type': 'application/x-www-form-urlencoded'}
         )
-        
-        logger.info(f"[RECEIVE] Token response status: {token_response.status_code}")
-        
-        if token_response.status_code == 429:
-            retry_after = token_response.headers.get('Retry-After', '60')
-            logger.error(f"[ERROR] Discord rate limited after retries. Retry-After: {retry_after}s")
-            request.session['error_message'] = f'Discord service rate limited. Please wait {retry_after} seconds and try again.'
+
+        if not token_res or token_res.status_code >= 400:
+            request.session['error_message'] = 'فشل التحقق مع Discord.'
             return redirect('apply_page')
-        
-        if token_response.status_code >= 400:
-            error_text = token_response.text[:200]
-            logger.error(f"[ERROR] Token exchange failed ({token_response.status_code}): {error_text}")
-            
-            if token_response.status_code == 401:
-                logger.error("Invalid Discord credentials")
-                request.session['error_message'] = 'Invalid Discord credentials. Please contact the administrator.'
-            elif token_response.status_code == 403:
-                logger.error("Discord authentication forbidden")
-                request.session['error_message'] = 'Discord authentication forbidden. Please try again later.'
-            else:
-                request.session['error_message'] = 'Failed to exchange authorization code. Please try again.'
-            return redirect('apply_page')
-        
-        try:
-            token_json = token_response.json()
-            logger.debug(f"Token response JSON keys: {list(token_json.keys())}")
-        except json.JSONDecodeError as e:
-            logger.error(f"[ERROR] Failed to parse token response: {e}")
-            logger.error(f"Response text: {token_response.text[:100]}")
-            request.session['error_message'] = 'Discord returned invalid response. Please try again.'
-            return redirect('apply_page')
-        
+
+        token_json = token_res.json()
         access_token = token_json.get('access_token')
+
         if not access_token:
-            logger.error(f"[ERROR] No access token in Discord response: {token_json}")
-            request.session['error_message'] = 'Did not receive access token from Discord.'
+            request.session['error_message'] = 'لم يتم استلام access token.'
             return redirect('apply_page')
-        
-        logger.info(f"[OK] Successfully obtained access token (length: {len(access_token)})")
-        
-        # ----------------------------
-        # Get user information
-        # ----------------------------
-        user_url = 'https://discord.com/api/v10/users/@me'
-        user_headers = {
-            'Authorization': f'Bearer {access_token}',
-            'User-Agent': 'MyApp/1.0'
-        }
-        
-        logger.info(f"[SEND] Fetching user info from: {user_url}")
-        user_response = make_request_with_retry('GET', user_url, headers=user_headers)
-        logger.info(f"[RECEIVE] User info response status: {user_response.status_code}")
-        
-        if user_response.status_code == 429:
-            retry_after = user_response.headers.get('Retry-After', '60')
-            logger.error(f"[ERROR] Discord rate limited (user info). Retry-After: {retry_after}s")
-            request.session['error_message'] = f'Discord service rate limited. Please wait {retry_after} seconds and try again.'
+
+        user_res = request_with_retry(
+            'GET',
+            'https://discord.com/api/v10/users/@me',
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+
+        if not user_res or user_res.status_code >= 400:
+            request.session['error_message'] = 'فشل جلب بيانات المستخدم من Discord.'
             return redirect('apply_page')
-        
-        if user_response.status_code >= 400:
-            error_text = user_response.text[:200]
-            logger.error(f"[ERROR] User info request failed ({user_response.status_code}): {error_text}")
-            request.session['error_message'] = 'Failed to fetch your Discord user information.'
-            return redirect('apply_page')
-        
-        try:
-            user_json = user_response.json()
-            logger.debug(f"User response JSON keys: {list(user_json.keys())}")
-        except json.JSONDecodeError as e:
-            logger.error(f"[ERROR] Failed to parse user response: {e}")
-            logger.error(f"Response text: {user_response.text[:100]}")
-            request.session['error_message'] = 'Discord returned invalid user information.'
-            return redirect('apply_page')
-        
+
+        user_json = user_res.json()
         discord_id = user_json.get('id')
         username = user_json.get('username', '')
-        
-        logger.info(f"Discord ID from response: {discord_id}")
-        logger.info(f"Username from response: {username}")
-        
+
         if not discord_id:
-            logger.error(f"[ERROR] No Discord ID in user response: {user_json}")
-            request.session['error_message'] = 'Could not retrieve your Discord ID.'
+            request.session['error_message'] = 'لم يتم استلام Discord ID.'
             return redirect('apply_page')
-        
-        logger.info(f"[OK] Successfully authenticated Discord user: {username} (ID: {discord_id})")
-        
-        # Store in session
+
+        # ✅ حفظ البيانات في session
         request.session['discord_id'] = str(discord_id)
         request.session['discord_username'] = username
-        
-        logger.info(f"[SUCCESS] Session updated successfully. Redirecting to apply page...")
-        
-        # Redirect to apply page
+        request.session.modified = True
+
         return redirect('apply_page')
-        
-    except requests.ConnectTimeout:
-        logger.error("[ERROR] Connection timeout while contacting Discord")
-        request.session['error_message'] = 'Connection timeout. Discord took too long to respond. Please try again.'
-        return redirect('apply_page')
-    except requests.ReadTimeout:
-        logger.error("[ERROR] Read timeout while waiting for Discord response")
-        request.session['error_message'] = 'Response timeout. Please try again.'
-        return redirect('apply_page')
-    except requests.RequestException as e:
-        logger.error(f"[ERROR] Request exception: {type(e).__name__}: {str(e)}")
-        request.session['error_message'] = 'Network error while authenticating. Please check your connection and try again.'
-        return redirect('apply_page')
+
     except Exception as e:
-        logger.exception(f"[ERROR] Unexpected error in Discord OAuth callback: {str(e)}")
-        logger.error(f"Exception type: {type(e).__name__}")
-        logger.error(f"Exception message: {str(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        request.session['error_message'] = 'An unexpected error occurred during authentication. Please try again.'
+        logger.exception('Discord OAuth callback failed')
+        request.session['error_message'] = 'حدث خطأ غير متوقع أثناء تسجيل الدخول.'
         return redirect('apply_page')
+
     finally:
-        # Session cleanup
-        logger.info("=== DISCORD OAUTH CALLBACK ENDED ===")
         request.session['discord_oauth_in_progress'] = False
+        request.session.modified = True
 
 # --- Apply & Test Views ---
 def apply_page(request):
-    # show apply form and open/closed status
-    logger = logging.getLogger('discord_oauth_debug')
-    logger.info(f"=== APPLY PAGE VIEW STARTED ===")
-    logger.info(f"Request method: {request.method}")
-    logger.info(f"Session Discord ID: {request.session.get('discord_id', 'NOT SET')}")
-    logger.info(f"Session Discord username: {request.session.get('discord_username', 'NOT SET')}")
-    logger.info(f"Session keys: {list(request.session.keys())}")
-    
+    from django.utils import timezone
+    import logging
+
+    logger = logging.getLogger('apply_page')
+
     open_mode = True
     closed_message = ''
     reopen_at = None
     user_already_tested = False
-    
-    # Check if user already submitted (by checking Discord ID from any previous Application)
-    # Prevent same Discord ID from submitting more than once - ever
+
+    # تحقق من التقديم المسبق
     if request.method == 'POST':
         discord_id = request.POST.get('discord_id', '').strip()
-        if discord_id:
-            existing_app = Application.objects.filter(discord_id=discord_id).first()
-            if existing_app:
-                user_already_tested = True
-    
-    # Prefer global ApplicationSetting if present (supports timed reopen)
-    # Use singleton setting record (id=1) to avoid ambiguity between multiple rows
+        if discord_id and Application.objects.filter(discord_id=discord_id).exists():
+            user_already_tested = True
+
     try:
         setting, _ = ApplicationSetting.objects.get_or_create(id=1)
     except Exception:
@@ -1072,32 +910,22 @@ def apply_page(request):
 
     now = timezone.now()
     if setting:
-        # auto-reopen if timer expired
         if setting.reopen_at and setting.reopen_at <= now:
             setting.status = 'open'
             setting.reopen_at = None
             setting.closed_message = ''
             setting.save()
-            # reopen any applications that were closed by the global setting
-            Application.objects.filter(status='closed').update(status='open', closed_message='', reopen_at=None)
+            Application.objects.filter(status='closed').update(status='open')
 
         if setting.status == 'closed':
             open_mode = False
             closed_message = setting.closed_message or ''
             reopen_at = setting.reopen_at
-    else:
-        # fallback: determine global settings from DB: for simplicity use latest Application closed fields if any
-        last_closed = Application.objects.filter(status='closed').order_by('-submitted_at').first()
-        if last_closed:
-            open_mode = False
-            closed_message = last_closed.closed_message or ''
-            reopen_at = last_closed.reopen_at
-    
+
     if user_already_tested:
         open_mode = False
-        closed_message = 'عذراً، هذا الرقم Discord قد قدّم بالفعل. يُسمح بمحاولة واحدة فقط لكل شخص.'
+        closed_message = 'هذا الحساب قد قدّم مسبقًا. يُسمح بمحاولة واحدة فقط.'
 
-    # Get error message from session if exists
     error_message = request.session.pop('error_message', None)
 
     return render(request, 'apply.html', {
@@ -1110,27 +938,37 @@ def apply_page(request):
         'discord_username': request.session.get('discord_username')
     })
 
-
 @require_POST
 def apply_submit(request):
-    # Get Discord ID from session (set by OAuth callback)
     discord_id = request.session.get('discord_id')
-    character = request.POST.get('character_name')
-    
+    character = request.POST.get('character_name', '').strip()
+
     if not discord_id or not character:
-        return JsonResponse({'error': 'يرجى تسجيل الدخول عبر Discord أولاً'}, status=400)
+        return JsonResponse({'error': 'يرجى تسجيل الدخول عبر Discord أولاً.'}, status=400)
 
-    # Check if this Discord ID has already submitted (prevent duplicates)
+    # منع التقديم المكرر
     if Application.objects.filter(discord_id=discord_id.strip()).exists():
-        return JsonResponse({'error': 'هذا الرقم Discord قد قدّم بالفعل. يُسمح بمحاولة واحدة فقط لكل شخص.'}, status=400)
+        return JsonResponse({'error': 'تم التقديم مسبقًا باستخدام هذا الحساب.'}, status=400)
 
-    app = Application.objects.create(discord_id=discord_id.strip(), character_name=character.strip(), status='open')
+    app = Application.objects.create(
+        discord_id=discord_id.strip(),
+        character_name=character,
+        status='open'
+    )
+
     try:
         actor = get_session_user(request)
-        _audit_log('apply_submit', actor, target=f'application:{app.id}', details=f'new application by discord {app.discord_id}')
+        _audit_log('apply_submit', actor, target=f'application:{app.id}', details=f'new application by discord {discord_id}')
     except Exception:
         pass
+
+    # 🧹 تنظيف الجلسة بعد الاستخدام
+    request.session.pop('discord_id', None)
+    request.session.pop('discord_username', None)
+    request.session.modified = True
+
     return JsonResponse({'ok': True, 'app_id': app.id})
+
 
 
 def apply_start_test(request, app_id):
